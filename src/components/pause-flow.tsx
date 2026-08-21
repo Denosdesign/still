@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UrgeSurf } from "@/components/urge-surf";
 import { cn } from "@/lib/utils";
-import { hoursOfWork } from "@/lib/format";
+import { formatWhenGb, hoursOfWork } from "@/lib/format";
 import { fromHkd, toHkd, useMoney } from "@/lib/currency";
 import {
   BUY_AFTER_WAIT_PRAISE,
@@ -44,6 +44,7 @@ import {
   type WantStatus,
 } from "@/lib/types";
 import { TagPicker } from "@/components/tag-picker";
+import { CalendarRemind, InstallHome } from "@/components/hold-loop";
 
 type Step = "capture" | "halt" | "surf" | "see" | "gratitude" | "decide" | "done";
 
@@ -65,6 +66,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   const wants = useStillStore((s) => s.wants);
   const logWant = useStillStore((s) => s.logWant);
   const resetDraft = useStillStore((s) => s.resetDraft);
+  const updateProfile = useStillStore((s) => s.updateProfile);
   const draft = useStillStore((s) => s.draft);
   const setDraft = useStillStore((s) => s.setDraft);
 
@@ -79,7 +81,13 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   const [waitHours, setWaitHours] = useState(24);
   const [outcome, setOutcome] = useState<WantStatus>("waiting");
   const [praise, setPraise] = useState("");
-  const [committed, setCommitted] = useState({ name: "", price: 0 });
+  const [committed, setCommitted] = useState({
+    name: "",
+    price: 0,
+    id: "",
+    waitUntil: 0,
+    firstHold: false,
+  });
 
   const price = Number.parseFloat(draft.priceHkd.replace(/,/g, "")) || 0;
   const work = hoursOfWork(price, profile.hourlyRate);
@@ -109,19 +117,29 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   function back() {
     const i = STEPS.indexOf(step as (typeof STEPS)[number]);
     if (step === "done") {
-      navigate({ to: "/" });
+      goHome();
       return;
     }
     if (i <= 0) {
-      navigate({ to: "/" });
+      goHome();
       return;
     }
     setStep(STEPS[i - 1] as Step);
   }
 
+  function goHome() {
+    navigate({ to: "/" });
+  }
+
   function commit(status: WantStatus, hours = waitHours) {
+    const firstHold =
+      !sample &&
+      status === "waiting" &&
+      !wants.some((w) => !w.sample && (w.status === "waiting" || w.waitHours > 0));
+    let savedId = "";
+    let savedUntil = 0;
     if (!sample) {
-      logWant({
+      const want = logWant({
         name: draft.name,
         priceHkd: price,
         category: draft.category,
@@ -132,8 +150,16 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
         status,
         waitHours: status === "waiting" ? hours : 0,
       });
+      savedId = want.id;
+      savedUntil = want.waitUntil ?? 0;
     }
-    setCommitted({ name: draft.name, price });
+    setCommitted({
+      name: draft.name,
+      price,
+      id: savedId,
+      waitUntil: savedUntil,
+      firstHold,
+    });
     setOutcome(status);
     setPraise(
       sample
@@ -254,10 +280,20 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
           price={committed.price}
           praise={praise}
           waitHours={waitHours}
+          waitUntil={committed.waitUntil}
+          wantId={committed.id}
+          wantName={committed.name}
           kept={kept}
           goalName={profile.goalName}
           practice={sample}
-          onHome={() => navigate({ to: "/" })}
+          showInstall={
+            committed.firstHold &&
+            outcome === "waiting" &&
+            !sample &&
+            !profile.installPromptSeen
+          }
+          onDismissInstall={() => updateProfile({ installPromptSeen: true })}
+          onHome={goHome}
           onWaitlist={() => navigate({ to: "/waitlist" })}
           onTryReal={() => {
             if (profile.rateSet) navigate({ to: "/pause", search: {} });
@@ -778,9 +814,14 @@ function DoneStep({
   price,
   praise,
   waitHours,
+  waitUntil,
+  wantId,
+  wantName,
   kept,
   goalName,
   practice = false,
+  showInstall = false,
+  onDismissInstall,
   onHome,
   onWaitlist,
   onTryReal,
@@ -789,9 +830,14 @@ function DoneStep({
   price: number;
   praise: string;
   waitHours: number;
+  waitUntil: number;
+  wantId: string;
+  wantName: string;
   kept: number;
   goalName: string;
   practice?: boolean;
+  showInstall?: boolean;
+  onDismissInstall: () => void;
   onHome: () => void;
   onWaitlist: () => void;
   onTryReal: () => void;
@@ -804,6 +850,7 @@ function DoneStep({
         ? "Chosen, not snatched."
         : "Yours to keep.";
   const { format } = useMoney();
+  const when = waitUntil ? formatWhenGb(waitUntil) : "";
 
   return (
     <div className="stagger-in flex flex-1 flex-col items-center pt-6 text-center">
@@ -823,12 +870,13 @@ function DoneStep({
           </>
         ) : outcome === "waiting" ? (
           <>
-            <p className="text-sm text-muted">Cooling off for</p>
+            <p className="text-sm text-muted">Come back</p>
             <p className="font-display text-3xl tabular text-harbour">
-              {waitLabel(waitHours)}
+              {when || waitLabel(waitHours)}
             </p>
             <p className="mt-2 text-sm text-muted">
-              {format(price)} is parked. We will ask you again when the itch has had time to fade.
+              {format(price)} is parked for {waitLabel(waitHours)}. The wait only
+              works if you reopen it.
             </p>
           </>
         ) : outcome === "bought" ? (
@@ -861,9 +909,18 @@ function DoneStep({
           </>
         ) : outcome === "waiting" ? (
           <>
-            <Button size="lg" className="w-full" onClick={onWaitlist}>
+            {wantId && waitUntil ? (
+              <CalendarRemind id={wantId} name={wantName} at={waitUntil} />
+            ) : null}
+            <Button
+              size="lg"
+              variant={wantId ? "secondary" : "primary"}
+              className="w-full"
+              onClick={onWaitlist}
+            >
               See the waitlist
             </Button>
+            {showInstall ? <InstallHome onDismiss={onDismissInstall} /> : null}
             <Button variant="quiet" className="w-full" onClick={onHome}>
               Back to my day
             </Button>
