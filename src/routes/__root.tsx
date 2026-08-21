@@ -7,6 +7,11 @@ import { RouteProgress } from "@/components/route-progress";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Still";
+const BASE = import.meta.env.BASE_URL;
+
+function asset(path: string) {
+  return `${BASE}${path.replace(/^\//, "")}`;
+}
 
 export const Route = createRootRoute({
   pendingComponent: () => <ScreenWait label="Loading…" />,
@@ -26,10 +31,10 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#2C4A42" },
     ],
     links: [
-      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "icon", type: "image/svg+xml", href: asset("favicon.svg") },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
+      { rel: "manifest", href: asset("__grok/manifest.webmanifest") },
+      { rel: "apple-touch-icon", href: asset("__grok/icon-180.png") },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -69,7 +74,7 @@ function RootError() {
         Something slipped. Your pauses are safe on this device — try again.
       </p>
       <a
-        href="/"
+        href={BASE}
         className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-harbour px-6 text-sm font-medium text-harbour-fg"
       >
         Back to my day
