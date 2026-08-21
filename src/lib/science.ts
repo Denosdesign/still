@@ -1,6 +1,6 @@
 /** Evidence-informed helpers. Cooling-off, HALT, 10-10-10, gratitude. */
 
-import { displayCategory, displaySource, type Want } from "@/lib/types";
+import { displayCategory, displaySource, type HaltState, type Want } from "@/lib/types";
 import { startOfWeek } from "@/lib/utils";
 
 export function recommendedWaitHours(priceHkd: number) {
@@ -26,7 +26,7 @@ export const WAIT_OPTIONS = [12, 24, 48, 24 * 7, 24 * 14] as const;
 export const HALT_COPY = {
   hungry: {
     title: "Hungry",
-    hint: "Low blood sugar quietly steals patience. Eat first — the listing will still be there.",
+    hint: "Low blood sugar quietly steals patience. Eat first \u2014 the listing will still be there.",
   },
   angry: {
     title: "Angry or stressed",
@@ -38,9 +38,34 @@ export const HALT_COPY = {
   },
   tired: {
     title: "Tired",
-    hint: "Evening scrolling is when most impulse buys happen. Sleep on it — quite literally.",
+    hint: "Evening scrolling is when most impulse buys happen. Sleep on it \u2014 quite literally.",
   },
 } as const;
+
+export function haltFacts(halt?: HaltState | null) {
+  if (!halt) return [];
+  const out: string[] = [];
+  if (halt.hungry) out.push("hungry");
+  if (halt.angry) out.push("angry or stressed");
+  if (halt.lonely) out.push("lonely");
+  if (halt.tired) out.push("tired");
+  return out;
+}
+
+export function haltSentence(halt?: HaltState | null) {
+  const facts = haltFacts(halt);
+  if (facts.length === 0) return "";
+  if (facts.length === 1) return `You were ${facts[0]}.`;
+  if (facts.length === 2) return `You were ${facts[0]} and ${facts[1]}.`;
+  return `You were ${facts.slice(0, -1).join(", ")} and ${facts[facts.length - 1]}.`;
+}
+
+export function pauseEvidence(want: Want) {
+  const halt = haltSentence(want.halt);
+  const src = displaySource(want.source);
+  const parts = [halt, src ? `Source: ${src}.` : ""].filter(Boolean);
+  return parts.join(" ");
+}
 
 export const URGE_LINES = [
   "The urge will peak. Then it falls. You do not have to dive in.",
@@ -55,7 +80,7 @@ export const KEEP_PRAISE = [
   "Most people never even pause. You did.",
   "Quietly brilliant. The want can go; the money stays.",
   "You chose future-you. They will thank you.",
-  "Not deprivation — discernment. Well done.",
+  "Not deprivation \u2014 discernment. Well done.",
 ];
 
 export const BUY_AFTER_WAIT_PRAISE = [
@@ -65,7 +90,7 @@ export const BUY_AFTER_WAIT_PRAISE = [
 ];
 
 export const WALKED_PRAISE = [
-  "You walked away. That is a real win — log it, feel it, carry on.",
+  "You walked away. That is a real win \u2014 log it, feel it, carry on.",
   "The want did not get the last word. Nice work.",
   "A small refusal, a large kindness to yourself.",
 ];
@@ -87,7 +112,7 @@ export const PRACTICE_TIPS: Record<string, string> = {
   surf: "Shops are timed for the spike, not for you. Outlast one wave and 'must have it now' usually loses its teeth.",
   see: "A round price is easy to shrug off. Hours of your life are not. Stretch the feeling to ten months and most must-haves look like a mood that passed.",
   gratitude:
-    "Wanting more is often the sense that nothing here is enough. Naming what already earns its keep closes that gap — long enough to choose.",
+    "Wanting more is often the sense that nothing here is enough. Naming what already earns its keep closes that gap \u2014 long enough to choose.",
   decide:
     "Holding is not a forever no. It is asking whether morning-you still wants it. Most impulses expire if you give them a night.",
 };
@@ -95,7 +120,7 @@ export const PRACTICE_TIPS: Record<string, string> = {
 export const SCIENCE_NOTES = [
   {
     title: "Cooling-off",
-    body: "Present bias makes the now feel larger than the later. A waiting period lets slower, wiser thinking catch up — the same idea behind statutory cooling-off on big sales.",
+    body: "Present bias makes the now feel larger than the later. A waiting period lets slower, wiser thinking catch up \u2014 the same idea behind statutory cooling-off on big sales.",
   },
   {
     title: "Urge surfing",
@@ -103,7 +128,7 @@ export const SCIENCE_NOTES = [
   },
   {
     title: "HALT",
-    body: "Hungry, Angry, Lonely, Tired — four states that reliably weaken self-control. Shopping in any of them is a studied trap, not a personality flaw.",
+    body: "Hungry, Angry, Lonely, Tired \u2014 four states that reliably weaken self-control. Shopping in any of them is a studied trap, not a personality flaw.",
   },
   {
     title: "Gratitude",
@@ -115,7 +140,7 @@ export const SCIENCE_NOTES = [
   },
   {
     title: "10-10-10",
-    body: "How will this feel in ten minutes, ten days, ten months? Stretching the timeline counters hyperbolic discounting — our habit of overvaluing the immediate.",
+    body: "How will this feel in ten minutes, ten days, ten months? Stretching the timeline counters hyperbolic discounting \u2014 our habit of overvaluing the immediate.",
   },
 ];
 
