@@ -219,6 +219,9 @@ export const useStillStore = create<StillState>()(
             customCurrencies: Array.isArray((p.profile ?? current.profile)?.customCurrencies)
               ? ((p.profile ?? current.profile)?.customCurrencies as string[])
               : [],
+            installPromptSeen: Boolean(
+              (p.profile ?? current.profile)?.installPromptSeen,
+            ),
           },
           customCategories: p.customCategories ?? [],
           customSources: p.customSources ?? [],
