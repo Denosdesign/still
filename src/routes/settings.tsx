@@ -148,14 +148,14 @@ function SettingsPage() {
           <Input
             value={goalName}
             onChange={(e) => setGoalName(e.target.value)}
-            placeholder="A quieter year, a trip\u2026"
+            placeholder="A quieter year, a trip..."
           />
           <p className="mt-1 text-xs text-muted">
             A reason, not a savings target. We do not count dollars toward it.
           </p>
         </Field>
         <Button size="lg" className="w-full" onClick={save}>
-          {saved ? "Saved \u2014 well done for setting this" : "Save"}
+          {saved ? "Saved. Well done for setting this" : "Save"}
         </Button>
       </div>
 
@@ -176,8 +176,8 @@ function SettingsPage() {
         <section className="mt-10 rounded-[var(--radius-lg)] bg-harbour px-4 py-5 text-harbour-fg">
           <p className="text-sm font-medium">Open this before checkout</p>
           <p className="mt-1 text-sm text-harbour-fg/75">
-            A Home Screen icon beats opening the shop first. Browsers cannot nag you later
-            \u2014 this is the reminder that works.
+            A Home Screen icon beats opening the shop first. Browsers cannot nag you later,
+            so this is the reminder that works.
           </p>
           <InstallSteps platform={platform} />
         </section>
