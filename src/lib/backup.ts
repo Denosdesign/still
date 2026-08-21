@@ -76,6 +76,7 @@ function pickData(raw: unknown): StillBackup["data"] | null {
           ? profileIn.currency
           : "HKD",
       customCurrencies: asArray(profileIn.customCurrencies, isString),
+      installPromptSeen: Boolean(profileIn.installPromptSeen),
     },
     wants: asArray(source.wants, isWant).filter((w) => !w.sample),
     checkIns: asArray(source.checkIns, isCheckIn),
