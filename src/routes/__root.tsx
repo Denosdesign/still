@@ -21,7 +21,7 @@ export const Route = createRootRoute({
       { title: APP_NAME },
       {
         name: "description",
-        content: "Pause the want. Keep the money. A quieter way to spend in Hong Kong dollars.",
+        content: "Pause the want. Keep the money. A quieter way to spend.",
       },
       { name: "theme-color", content: "#2C4A42" },
     ],
