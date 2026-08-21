@@ -31,7 +31,7 @@ export function WantCard({
         <div className="min-w-0">
           <p className="truncate font-display text-lg leading-tight text-ink">{want.name}</p>
           <p className="mt-1 text-xs text-muted">
-            {[category, want.sample ? "sample" : ""].filter(Boolean).join(" · ")}
+            {[category, want.sample ? "sample" : ""].filter(Boolean).join(" \u00b7 ")}
           </p>
         </div>
         <p className="shrink-0 font-display text-lg tabular text-harbour">
@@ -41,11 +41,11 @@ export function WantCard({
       <div className="mt-3 flex items-center gap-2 text-sm text-muted">
         <Clock className="size-3.5" />
         {ready ? (
-          <span className="font-medium text-harbour">Ready to review</span>
+          <span className="font-medium text-harbour">How does it feel now?</span>
         ) : (
           <span className="tabular">{formatCountdown(remaining)} left</span>
         )}
-        <span className="text-faint">· logged {formatRelative(want.createdAt, now)} ago</span>
+        <span className="text-faint">\u00b7 logged {formatRelative(want.createdAt, now)} ago</span>
       </div>
     </Link>
   );

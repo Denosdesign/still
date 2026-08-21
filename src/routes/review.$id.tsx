@@ -3,11 +3,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
-import { formatDateGb, hoursOfWork } from "@/lib/format";
+import { CalendarRemind } from "@/components/hold-loop";
+import { formatClockGb, hoursOfWork } from "@/lib/format";
 import { useMoney } from "@/lib/currency";
-import { KEEP_PRAISE, pick, waitLabel } from "@/lib/science";
+import { KEEP_PRAISE, haltSentence, pick, waitLabel } from "@/lib/science";
 import { useStillStore } from "@/lib/store";
-import { displayCategory, displaySource } from "@/lib/types";
+import { displaySource } from "@/lib/types";
 
 export const Route = createFileRoute("/review/$id")({
   component: ReviewPage,
@@ -36,8 +37,9 @@ function ReviewPage() {
 
   const work = hoursOfWork(want.priceHkd, profile.hourlyRate);
   const ready = want.status === "waiting" && (want.waitUntil ?? 0) <= Date.now();
-  const cat = displayCategory(want.category);
+  const halt = haltSentence(want.halt);
   const src = displaySource(want.source);
+  const clock = formatClockGb(want.createdAt);
 
   function keep() {
     decide(want!.id, "kept");
@@ -62,20 +64,25 @@ function ReviewPage() {
       </button>
 
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-        {want.status === "waiting" ? (ready ? "Time’s up" : "Still holding") : want.status}
+        {want.status === "waiting" ? (ready ? "Time\u2019s up" : "Still holding") : want.status}
       </p>
       <h1 className="mt-2 font-display text-3xl">{want.name}</h1>
       <p className="mt-2 font-display text-3xl tabular text-harbour">
         {format(want.priceHkd)}
       </p>
-      <p className="mt-2 text-sm text-muted">
-        Logged {formatDateGb(want.createdAt)}
-        {cat ? ` · ${cat}` : ""}
-        {src ? ` · ${src}` : ""}
-      </p>
+
+      <section className="mt-6 rounded-[var(--radius-xl)] bg-harbour-soft/80 px-4 py-4">
+        <p className="text-[11px] uppercase tracking-[0.12em] text-harbour/70">
+          When you paused
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-harbour">
+          {halt ? `${halt} ` : ""}It was {clock}.
+          {src ? ` Source: ${src}.` : ""}
+        </p>
+      </section>
 
       {work && (
-        <p className="mt-5 rounded-[var(--radius-lg)] bg-harbour-soft/80 px-4 py-3 text-sm text-harbour">
+        <p className="mt-4 text-sm text-muted">
           Still {work.label}. The price has not changed. You have.
         </p>
       )}
@@ -85,23 +92,27 @@ function ReviewPage() {
           <p className="font-display text-xl">
             {ready ? "Has the itch faded?" : `Cooling for ${waitLabel(want.waitHours)}.`}
           </p>
-          <p className="text-sm text-muted">
-            If it still feels essential after the wait, buying it is not a failure. If it feels
-            silly, that is information worth {format(want.priceHkd)}.
-          </p>
+          {!ready && want.waitUntil ? (
+            <CalendarRemind
+              id={want.id}
+              name={want.name}
+              at={want.waitUntil}
+              variant="secondary"
+            />
+          ) : null}
           <div className="mt-auto flex flex-col gap-2 pt-6">
             <Button size="lg" className="w-full" onClick={keep}>
-              It faded — keep the money
+              It faded \u2014 keep the money
             </Button>
             <Button size="lg" variant="secondary" className="w-full" onClick={holdMore}>
-              Need more time — hold 48 hours
+              Need more time \u2014 hold 48 hours
             </Button>
             <button
               type="button"
               onClick={buy}
               className="py-3 text-sm text-muted"
             >
-              Still want it — buy with intention
+              Still want it \u2014 buy with intention
             </button>
           </div>
         </div>

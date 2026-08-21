@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useStillStore } from "@/lib/store";
 import { ScreenWait } from "@/components/screen-wait";
+import "@/lib/install";
 
 export function HydrateStill({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -29,7 +30,7 @@ export function HydrateStill({ children }: { children: ReactNode }) {
   }, []);
 
   if (!ready) {
-    return <ScreenWait label="Loading your pauses…" />;
+    return <ScreenWait label="Loading your pauses\u2026" />;
   }
 
   return children;
