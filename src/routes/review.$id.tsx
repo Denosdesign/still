@@ -64,7 +64,7 @@ function ReviewPage() {
       </button>
 
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-        {want.status === "waiting" ? (ready ? "Time\u2019s up" : "Still holding") : want.status}
+        {want.status === "waiting" ? (ready ? "Time’s up" : "Still holding") : want.status}
       </p>
       <h1 className="mt-2 font-display text-3xl">{want.name}</h1>
       <p className="mt-2 font-display text-3xl tabular text-harbour">
@@ -102,17 +102,17 @@ function ReviewPage() {
           ) : null}
           <div className="mt-auto flex flex-col gap-2 pt-6">
             <Button size="lg" className="w-full" onClick={keep}>
-              It faded \u2014 keep the money
+              It faded — keep the money
             </Button>
             <Button size="lg" variant="secondary" className="w-full" onClick={holdMore}>
-              Need more time \u2014 hold 48 hours
+              Need more time — hold 48 hours
             </Button>
             <button
               type="button"
               onClick={buy}
               className="py-3 text-sm text-muted"
             >
-              Still want it \u2014 buy with intention
+              Still want it — buy with intention
             </button>
           </div>
         </div>
