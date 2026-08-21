@@ -4,6 +4,8 @@ A mobile web app for pausing impulse spending. British English. Your currency.
 
 When a want hits, name it, ride the wave, and hold it overnight. No shame if you buy. Pausing is the win.
 
+**Use it here:** [https://denosdesign.github.io/still/](https://denosdesign.github.io/still/)
+
 ## Run locally
 
 ```bash
@@ -25,3 +27,5 @@ Data stays on the device (local storage). No account required.
 ## Stack
 
 TanStack Start, React, Tailwind, Zustand.
+
+GitHub Pages hosts a static build (`npm run build:pages`).
