@@ -7,6 +7,8 @@ import { CurrencySelect } from "@/components/currency-select";
 import { getCurrency, isPreset, normaliseCurrency } from "@/lib/currency";
 import { downloadBackup, readBackupFile, restoreBackup } from "@/lib/backup";
 import { useStillStore } from "@/lib/store";
+import { InstallSteps } from "@/components/hold-loop";
+import { installPlatform, useStandalone } from "@/lib/install";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
@@ -31,6 +33,8 @@ function SettingsPage() {
     profile.customCurrencies ?? [],
   );
   const money = getCurrency(currency);
+  const standalone = useStandalone();
+  const platform = installPlatform();
 
   function addCustom(raw: string) {
     const next = normaliseCurrency(raw);
@@ -144,14 +148,14 @@ function SettingsPage() {
           <Input
             value={goalName}
             onChange={(e) => setGoalName(e.target.value)}
-            placeholder="A quieter year, a trip…"
+            placeholder="A quieter year, a trip\u2026"
           />
           <p className="mt-1 text-xs text-muted">
             A reason, not a savings target. We do not count dollars toward it.
           </p>
         </Field>
         <Button size="lg" className="w-full" onClick={save}>
-          {saved ? "Saved — well done for setting this" : "Save"}
+          {saved ? "Saved \u2014 well done for setting this" : "Save"}
         </Button>
       </div>
 
@@ -160,13 +164,24 @@ function SettingsPage() {
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted">
           <li>When a want hits, open the app before you open the shop.</li>
           <li>Name the thing and the price. Ride the ninety-second wave.</li>
-          <li>Hold it on the waitlist. Review it only when the timer is done.</li>
-          <li>Check in on loud days. A twenty-second visit still counts.</li>
+          <li>Hold it on the waitlist. Put a calendar reminder so the wait has an ending.</li>
+          <li>Review it only when the timer is done. What was true at pause is the evidence.</li>
         </ol>
         <Link to="/insights" className="mt-4 inline-block text-sm text-harbour">
           Read the science behind each step
         </Link>
       </section>
+
+      {!standalone && (
+        <section className="mt-10 rounded-[var(--radius-lg)] bg-harbour px-4 py-5 text-harbour-fg">
+          <p className="text-sm font-medium">Open this before checkout</p>
+          <p className="mt-1 text-sm text-harbour-fg/75">
+            A Home Screen icon beats opening the shop first. Browsers cannot nag you later
+            \u2014 this is the reminder that works.
+          </p>
+          <InstallSteps platform={platform} />
+        </section>
+      )}
 
       <section className="mt-10 rounded-[var(--radius-lg)] border border-border p-4">
         <p className="text-sm font-medium">Keep a copy</p>
