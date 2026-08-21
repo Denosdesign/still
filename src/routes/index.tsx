@@ -98,7 +98,12 @@ function Home() {
 
         {ready.length > 0 && (
           <section>
-            <p className="mb-2 font-display text-lg">Ready to review</p>
+            <p className="mb-1 font-display text-lg">The itch had a night</p>
+            <p className="mb-3 text-sm text-muted">
+              {ready.length === 1
+                ? `How does ${ready[0].name} feel?`
+                : `${ready.length} wants had the night. How do they feel?`}
+            </p>
             <div className="space-y-2">
               {ready.map((w) => (
                 <WantCard key={w.id} want={w} now={now} ready />
@@ -156,7 +161,7 @@ function Home() {
             to="/start"
             className="rounded-[var(--radius-lg)] bg-harbour-soft/70 px-4 py-3 text-sm text-harbour"
           >
-            Add your numbers — the hours get honest.
+            Add your numbers \u2014 the hours get honest.
           </Link>
         )}
       </div>
