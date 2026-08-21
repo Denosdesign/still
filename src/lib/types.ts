@@ -76,6 +76,7 @@ export type Profile = {
   rateSet: boolean;
   currency: string;
   customCurrencies: string[];
+  installPromptSeen: boolean;
 };
 
 export const DEFAULT_PROFILE: Profile = {
@@ -89,6 +90,7 @@ export const DEFAULT_PROFILE: Profile = {
   rateSet: false,
   currency: "HKD",
   customCurrencies: [],
+  installPromptSeen: false,
 };
 
 export const EMPTY_HALT: HaltState = {

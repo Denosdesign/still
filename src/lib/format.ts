@@ -26,7 +26,7 @@ export function hoursOfWork(priceHkd: number, hourlyRate: number) {
 
 export type PayPeriod = "hour" | "month" | "year";
 
-/** 8-hour days × 22 working days. Transparent, not a tax calculation. */
+/** 8-hour days \u00d7 22 working days. Transparent, not a tax calculation. */
 export const HOURS_PER_MONTH = 8 * 22;
 export const HOURS_PER_YEAR = HOURS_PER_MONTH * 12;
 
@@ -100,6 +100,24 @@ export function formatDateGb(ts: number) {
     day: "numeric",
     month: "short",
   });
+}
+
+export function formatClockGb(ts: number) {
+  return new Date(ts).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+export function formatWhenGb(ts: number) {
+  const d = new Date(ts);
+  const day = d.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+  return `${formatClockGb(ts)}, ${day}`;
 }
 
 export function percentOf(part: number, whole: number) {
