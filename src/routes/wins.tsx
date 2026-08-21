@@ -105,7 +105,7 @@ function WinsPage() {
         )}
         {considered > 0 && (
           <p className="mt-4 text-sm text-muted">
-            {considered} considered purchase{considered === 1 ? "" : "s"} after a pause —
+            {considered} considered purchase{considered === 1 ? "" : "s"} after a pause \u2014
             that is the opposite of impulse.
           </p>
         )}
@@ -170,7 +170,7 @@ function badgesFor(
       title: "A week of showing up",
       detail:
         stats.streak >= 7
-          ? "Seven days. Not a personality transplant — a rhythm."
+          ? "Seven days. Not a personality transplant \u2014 a rhythm."
           : "Check in or pause on seven days in a row.",
       on: stats.streak >= 7,
     },
