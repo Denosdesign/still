@@ -52,6 +52,7 @@ export function Shell({
                     <li key={item.to} className="flex justify-center">
                       <Link
                         to={rateSet ? "/pause" : "/start"}
+                        search={rateSet ? {} : undefined}
                         aria-label="Pause a want"
                         className="-mt-6 flex size-14 items-center justify-center rounded-full bg-harbour text-harbour-fg shadow-[var(--shadow-card)] transition-transform duration-[var(--motion-quick)] ease-[var(--ease-out)] active:scale-[0.96]"
                       >

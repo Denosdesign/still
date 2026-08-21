@@ -40,7 +40,9 @@ function WaitlistPage() {
             When a want hits, park it here. The wait is the product.
           </p>
           <Button asChild className="mt-6">
-            <Link to={rateSet ? "/pause" : "/start"}>Pause a want</Link>
+            <Link to={rateSet ? "/pause" : "/start"} search={rateSet ? {} : undefined}>
+              Pause a want
+            </Link>
           </Button>
         </div>
       ) : (

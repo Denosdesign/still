@@ -28,7 +28,8 @@ function Home() {
     return () => window.clearInterval(t);
   }, []);
 
-  if (!profile.seenWelcome) {
+  const notStarted = !profile.rateSet && !profile.setupDone;
+  if (!profile.seenWelcome || notStarted) {
     return <Welcome />;
   }
 
@@ -60,6 +61,7 @@ function Home() {
 
         <Link
           to={profile.rateSet ? "/pause" : "/start"}
+          search={profile.rateSet ? {} : undefined}
           className="relative overflow-hidden rounded-[var(--radius-2xl)] bg-harbour px-6 py-7 text-harbour-fg shadow-[var(--shadow-card)] transition-transform active:scale-[0.98]"
         >
           <WaveDeco />

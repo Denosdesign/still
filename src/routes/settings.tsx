@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CurrencySelect } from "@/components/currency-select";
 import { getCurrency, isPreset, normaliseCurrency } from "@/lib/currency";
+import { downloadBackup, readBackupFile, restoreBackup } from "@/lib/backup";
 import { useStillStore } from "@/lib/store";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
@@ -16,6 +17,10 @@ function SettingsPage() {
   const resetAll = useStillStore((s) => s.resetAll);
   const [saved, setSaved] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [backupNote, setBackupNote] = useState("");
+  const [confirmImport, setConfirmImport] = useState(false);
+  const pendingFile = useRef<File | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(profile.name);
   const [hourlyRate, setHourlyRate] = useState(String(profile.hourlyRate));
@@ -50,6 +55,44 @@ function SettingsPage() {
     });
     setSaved(true);
     window.setTimeout(() => setSaved(false), 1800);
+  }
+
+  function exportCopy() {
+    try {
+      downloadBackup();
+      setBackupNote("A copy is in your downloads. Keep it somewhere you trust.");
+    } catch {
+      setBackupNote("Could not download just now. Try again.");
+    }
+  }
+
+  function pickFile() {
+    fileRef.current?.click();
+  }
+
+  async function onFile(file: File | undefined) {
+    if (!file) return;
+    pendingFile.current = file;
+    setConfirmImport(true);
+    setBackupNote("");
+  }
+
+  async function applyImport() {
+    const file = pendingFile.current;
+    pendingFile.current = null;
+    setConfirmImport(false);
+    if (!file) return;
+    try {
+      const data = await readBackupFile(file);
+      restoreBackup(data);
+      setBackupNote("Restored. Your pauses are back on this device.");
+      window.setTimeout(() => navigate({ to: "/" }), 700);
+    } catch (err) {
+      setBackupNote(
+        err instanceof Error ? err.message : "That file is not a Still copy. Nothing was changed.",
+      );
+    }
+    if (fileRef.current) fileRef.current.value = "";
   }
 
   return (
@@ -126,6 +169,39 @@ function SettingsPage() {
       </section>
 
       <section className="mt-10 rounded-[var(--radius-lg)] border border-border p-4">
+        <p className="text-sm font-medium">Keep a copy</p>
+        <p className="mt-1 text-sm text-muted">
+          Still lives in this browser, with no account and no server. Download a file for
+          safekeeping, or restore one if you change phones.
+        </p>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          className="sr-only"
+          onChange={(e) => void onFile(e.target.files?.[0])}
+        />
+        <Button variant="secondary" className="mt-3 w-full" onClick={exportCopy}>
+          Download a copy
+        </Button>
+        {confirmImport ? (
+          <Button variant="danger" className="mt-2 w-full" onClick={() => void applyImport()}>
+            Yes, replace what is here
+          </Button>
+        ) : (
+          <Button variant="ghost" className="mt-2 w-full" onClick={pickFile}>
+            Restore from a copy
+          </Button>
+        )}
+        {confirmImport && (
+          <p className="mt-2 text-xs text-muted">
+            This replaces pauses and numbers on this device with the file. Cannot be undone.
+          </p>
+        )}
+        {backupNote && <p className="mt-2 text-sm text-harbour">{backupNote}</p>}
+      </section>
+
+      <section className="mt-6 rounded-[var(--radius-lg)] border border-border p-4">
         <p className="text-sm font-medium">Start again</p>
         <p className="mt-1 text-sm text-muted">
           Clears pauses and check-ins from this device. Cannot be undone.
