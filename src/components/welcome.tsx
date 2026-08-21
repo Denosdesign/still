@@ -1,14 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { useStillStore } from "@/lib/store";
 
 export function Welcome() {
-  const updateProfile = useStillStore((s) => s.updateProfile);
-
-  function enter() {
-    updateProfile({ seenWelcome: true });
-  }
-
   return (
     <div className="flex min-h-dvh flex-col bg-harbour px-6 pb-10 pt-[max(3rem,env(safe-area-inset-top))] text-harbour-fg">
       <div className="stagger-in mx-auto flex w-full max-w-md flex-1 flex-col">
@@ -30,9 +23,7 @@ export function Welcome() {
             size="xl"
             className="w-full bg-card text-ink hover:bg-card/90"
           >
-            <Link to="/start" onClick={enter}>
-              Start
-            </Link>
+            <Link to="/start">Start</Link>
           </Button>
           <Button
             asChild
@@ -40,7 +31,7 @@ export function Welcome() {
             variant="ghost"
             className="w-full border border-harbour-fg/40 text-harbour-fg hover:bg-harbour-fg/10 hover:text-harbour-fg"
           >
-            <Link to="/pause" search={{ sample: true }} onClick={enter}>
+            <Link to="/pause" search={{ sample: true }}>
               Show me how it works
             </Link>
           </Button>

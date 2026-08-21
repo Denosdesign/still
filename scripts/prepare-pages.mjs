@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 /**
  * Flatten the Vite/TanStack static output into dist-pages for GitHub Pages.
- * Copies the SPA shell to index.html and 404.html so deep links work.
+ * Copies the SPA shell to index.html, 404.html, and each known route folder
+ * so deep links return HTTP 200 instead of flashing a 404.
  */
-import { cpSync, copyFileSync, existsSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const CANDIDATES = ["dist", ".output/public", "dist/client"];
+const ROUTES = ["pause", "start", "settings", "insights", "waitlist", "wins", "review"];
 
 function findOutput() {
   for (const dir of CANDIDATES) {
@@ -36,5 +38,10 @@ if (!shell) {
 
 copyFileSync(shell, join(dest, "index.html"));
 copyFileSync(shell, join(dest, "404.html"));
+for (const route of ROUTES) {
+  const dir = join(dest, route);
+  mkdirSync(dir, { recursive: true });
+  copyFileSync(shell, join(dir, "index.html"));
+}
 writeFileSync(join(dest, ".nojekyll"), "");
-console.log(`[prepare-pages] ${src} → ${dest} (shell ${shell})`);
+console.log(`[prepare-pages] ${src} → ${dest} (shell ${shell}, routes ${ROUTES.join(", ")})`);

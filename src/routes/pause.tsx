@@ -6,9 +6,13 @@ type PauseSearch = {
   sample?: boolean;
 };
 
+function isSampleFlag(value: unknown) {
+  return value === true || value === "true" || value === "1" || value === 1;
+}
+
 export const Route = createFileRoute("/pause")({
   validateSearch: (search: Record<string, unknown>): PauseSearch => ({
-    sample: search.sample === true || search.sample === "1" || search.sample === 1,
+    sample: isSampleFlag(search?.sample),
   }),
   component: PausePage,
 });

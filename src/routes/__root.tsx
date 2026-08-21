@@ -4,6 +4,7 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { HydrateStill } from "@/components/hydrate-still";
 import { ScreenWait } from "@/components/screen-wait";
 import { RouteProgress } from "@/components/route-progress";
+import { AppErrorComponent, AppNotFound } from "@/lib/error-component";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Still";
@@ -15,7 +16,8 @@ function asset(path: string) {
 
 export const Route = createRootRoute({
   pendingComponent: () => <ScreenWait label="Loading…" />,
-  errorComponent: RootError,
+  errorComponent: AppErrorComponent,
+  notFoundComponent: AppNotFound,
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -63,22 +65,5 @@ function RootDocument() {
         <Scripts />
       </body>
     </html>
-  );
-}
-
-function RootError() {
-  return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-surface px-6 text-center">
-      <p className="font-display text-3xl text-harbour">Still here.</p>
-      <p className="mt-3 max-w-xs text-sm text-muted">
-        Something slipped. Your pauses are safe on this device — try again.
-      </p>
-      <a
-        href={BASE}
-        className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-harbour px-6 text-sm font-medium text-harbour-fg"
-      >
-        Back to my day
-      </a>
-    </div>
   );
 }
