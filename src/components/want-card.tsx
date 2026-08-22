@@ -9,10 +9,12 @@ export function WantCard({
   want,
   now,
   ready = false,
+  muted = false,
 }: {
   want: Want;
   now: number;
   ready?: boolean;
+  muted?: boolean;
 }) {
   const remaining = (want.waitUntil ?? 0) - now;
   const category = displayCategory(want.category);
@@ -23,18 +25,34 @@ export function WantCard({
       to="/review/$id"
       params={{ id: want.id }}
       className={cn(
-        "block rounded-[var(--radius-xl)] border p-4 shadow-[var(--shadow-card)] transition-transform active:scale-[0.98]",
-        ready ? "border-harbour bg-harbour-soft/60" : "border-border bg-card",
+        "block rounded-[var(--radius-xl)] border p-4 transition-transform active:scale-[0.98]",
+        ready
+          ? "border-harbour bg-harbour-soft/60 shadow-[var(--shadow-card)]"
+          : muted
+            ? "border-border/50 bg-transparent shadow-none"
+            : "border-border bg-card shadow-[var(--shadow-card)]",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-display text-lg leading-tight text-ink">{want.name}</p>
+          <p
+            className={cn(
+              "truncate font-display text-lg leading-tight",
+              muted ? "text-muted" : "text-ink",
+            )}
+          >
+            {want.name}
+          </p>
           <p className="mt-1 text-xs text-muted">
             {[category, want.sample ? "sample" : ""].filter(Boolean).join(" · ")}
           </p>
         </div>
-        <p className="shrink-0 font-display text-lg tabular text-harbour">
+        <p
+          className={cn(
+            "shrink-0 font-display text-lg tabular",
+            muted ? "text-muted" : "text-harbour",
+          )}
+        >
           {format(want.priceHkd)}
         </p>
       </div>
