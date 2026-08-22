@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { Shell } from "@/components/shell";
@@ -29,6 +29,7 @@ function ReviewPage() {
   const setHideUntilReview = useStillStore((s) => s.setHideUntilReview);
   const praise = useMemo(() => pick(KEEP_PRAISE, id.length), [id]);
   const { format } = useMoney();
+  const [hideConfirm, setHideConfirm] = useState(false);
 
   if (!want) {
     return (
@@ -126,20 +127,48 @@ function ReviewPage() {
                 label="Add a calendar reminder"
               />
             ) : null}
-            <button
-              type="button"
-              className="w-full py-2 text-sm text-muted"
-              onClick={() => {
-                if (want.hideUntilReview) {
-                  setHideUntilReview(want.id, false);
-                  return;
-                }
-                setHideUntilReview(want.id, true);
-                navigate({ to: "/waitlist" });
-              }}
-            >
-              {want.hideUntilReview ? "Show on Home again" : "Hide until review"}
-            </button>
+            {want.hideUntilReview ? (
+              <button
+                type="button"
+                className="w-full py-2 text-sm text-muted"
+                onClick={() => setHideUntilReview(want.id, false)}
+              >
+                Show on Home again
+              </button>
+            ) : hideConfirm ? (
+              <div className="px-1 pt-1 text-center">
+                <p className="text-sm leading-relaxed text-muted">
+                  It leaves Home until{" "}
+                  {want.waitUntil ? formatWhenGb(want.waitUntil) : "review"}.
+                  The wait still runs. This does not keep the money.
+                </p>
+                <button
+                  type="button"
+                  className="mt-3 w-full py-2 text-sm font-medium text-harbour"
+                  onClick={() => {
+                    setHideUntilReview(want.id, true);
+                    navigate({ to: "/waitlist" });
+                  }}
+                >
+                  Hide until review
+                </button>
+                <button
+                  type="button"
+                  className="w-full py-2 text-sm text-muted"
+                  onClick={() => setHideConfirm(false)}
+                >
+                  Not now
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="w-full py-2 text-sm text-muted"
+                onClick={() => setHideConfirm(true)}
+              >
+                Hide until review
+              </button>
+            )}
           </div>
         </div>
       ) : null}
