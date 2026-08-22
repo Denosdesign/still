@@ -89,7 +89,7 @@ export function CurrencySelect({
       <p className="mt-1.5 text-xs text-faint">
         {money.known
           ? `${money.symbol.trim()} · ${money.name}`
-          : "Your own code. Type the numbers yourself — no suggested amounts."}
+          : "Your own code. Type the numbers yourself. No suggested amounts."}
       </p>
     </div>
   );
