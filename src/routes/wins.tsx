@@ -66,7 +66,7 @@ function WinsPage() {
       <div className="mt-4 grid grid-cols-3 gap-2">
         <Mini k="Pauses" v={String(pauses)} />
         <Mini k="Let go" v={String(letGo)} />
-        <Mini k="Rhythm" v={streak ? `${streak}d` : "—"} />
+        <Mini k="Rhythm" v={streak ? `${streak}d` : "None"} />
       </div>
 
       <GladRecord misses={misses} />
@@ -111,8 +111,8 @@ function WinsPage() {
         )}
         {considered > 0 && (
           <p className="mt-4 text-sm text-muted">
-            {considered} considered purchase{considered === 1 ? "" : "s"} after a pause —
-            that is the opposite of impulse.
+            {considered} considered purchase{considered === 1 ? "" : "s"} after a pause.
+            That is the opposite of impulse.
           </p>
         )}
       </section>
@@ -292,7 +292,7 @@ function badgesFor(
       title: "A week of showing up",
       detail:
         stats.streak >= 7
-          ? "Seven days. Not a personality transplant — a rhythm."
+          ? "Seven days. Not a personality transplant. A rhythm."
           : "Check in or pause on seven days in a row.",
       on: stats.streak >= 7,
     },
