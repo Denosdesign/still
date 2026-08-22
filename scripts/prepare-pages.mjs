@@ -8,7 +8,7 @@ import { cpSync, copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, write
 import { join } from "node:path";
 
 const CANDIDATES = ["dist", ".output/public", "dist/client"];
-const ROUTES = ["pause", "start", "settings", "insights", "waitlist", "wins", "review"];
+const ROUTES = ["pause", "start", "settings", "insights", "waitlist", "wins", "review", "didnt-buy"];
 
 function findOutput() {
   for (const dir of CANDIDATES) {
