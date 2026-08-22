@@ -102,7 +102,7 @@ function Home() {
           to="/didnt-buy"
           className="block w-full rounded-[var(--radius-xl)] border border-border bg-card px-5 py-3.5 text-center text-sm font-medium text-ink shadow-[var(--shadow-card)] transition-transform active:scale-[0.98]"
         >
-          I didn’t buy something
+          Glad I didn’t
         </Link>
 
         {showNumbers && (
