@@ -361,8 +361,8 @@ function PayStep({
           <p className="mt-4 rounded-[var(--radius-lg)] bg-harbour-soft/80 px-4 py-3 text-sm text-harbour">
             That is about {formatMoney(hourly, currency)} an hour
             {period === "month"
-              ? " — assuming 8-hour days, 22 days a month."
-              : " — assuming 8-hour days across the year."}
+              ? ", assuming 8-hour days, 22 days a month."
+              : ", assuming 8-hour days across the year."}
           </p>
         )}
 
@@ -640,7 +640,7 @@ function joyHint(pct: number) {
     return "Conservative. For a large savings goal, or if you want assets to grow quickly.";
   }
   if (pct < 17.5) {
-    return "Balanced — enough joy without feeling too tight.";
+    return "Balanced. Enough joy without feeling too tight.";
   }
   if (pct < 22.5) {
     return "Steady income, and the savings rate is already enough.";
