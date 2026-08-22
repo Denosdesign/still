@@ -59,6 +59,13 @@ function sampleDraft(code: string) {
   };
 }
 
+type PauseDraft = {
+  name: string;
+  priceHkd: string;
+  category: string;
+  source: string;
+};
+
 export function PauseFlow({ sample = false }: { sample?: boolean }) {
   const { code } = useMoney();
   const navigate = useNavigate();
@@ -66,8 +73,16 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   const wants = useStillStore((s) => s.wants);
   const logWant = useStillStore((s) => s.logWant);
   const resetDraft = useStillStore((s) => s.resetDraft);
-  const draft = useStillStore((s) => s.draft);
-  const setDraft = useStillStore((s) => s.setDraft);
+  const liveDraft = useStillStore((s) => s.draft);
+  const setLiveDraft = useStillStore((s) => s.setDraft);
+  const [practiceDraft, setPracticeDraft] = useState<PauseDraft>(() =>
+    sampleDraft(code),
+  );
+  const draft = sample ? practiceDraft : liveDraft;
+  const setDraft = sample
+    ? (patch: Partial<PauseDraft>) =>
+        setPracticeDraft((current) => ({ ...current, ...patch }))
+    : setLiveDraft;
 
   const [step, setStep] = useState<Step>("capture");
   const [halt, setHalt] = useState<HaltState>(EMPTY_HALT);
@@ -98,8 +113,16 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   );
 
   useEffect(() => {
-    if (sample && !draft.name) setDraft(sampleDraft(code));
-  }, [sample, draft.name, setDraft, code]);
+    if (sample) return;
+    const demo = sampleDraft(code);
+    if (
+      liveDraft.name === demo.name &&
+      liveDraft.category === demo.category &&
+      liveDraft.source === demo.source
+    ) {
+      resetDraft();
+    }
+  }, [sample, code, liveDraft.name, liveDraft.category, liveDraft.source, resetDraft]);
 
   function go(next: Step) {
     if (next === "see" || next === "decide") {
@@ -159,7 +182,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
             ? pick(BUY_AFTER_WAIT_PRAISE)
             : pick(KEEP_PRAISE),
     );
-    resetDraft();
+    if (!sample) resetDraft();
     setStep("done");
     if (!sample && typeof navigator !== "undefined" && navigator.vibrate) {
       navigator.vibrate(12);
@@ -208,6 +231,8 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
       {step === "capture" && (
         <CaptureStep
           sample={sample}
+          draft={draft}
+          setDraft={setDraft}
           onNext={() => go("halt")}
         />
       )}
@@ -351,13 +376,15 @@ function stepTitle(step: Step, name: string) {
 
 function CaptureStep({
   sample,
+  draft,
+  setDraft,
   onNext,
 }: {
   sample: boolean;
+  draft: PauseDraft;
+  setDraft: (patch: Partial<PauseDraft>) => void;
   onNext: () => void;
 }) {
-  const draft = useStillStore((s) => s.draft);
-  const setDraft = useStillStore((s) => s.setDraft);
   const rememberTag = useStillStore((s) => s.rememberTag);
   const customCategories = useStillStore((s) => s.customCategories);
   const customSources = useStillStore((s) => s.customSources);
