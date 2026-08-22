@@ -111,19 +111,6 @@ function StartPage() {
     navigate({ to });
   }
 
-  function useTypical() {
-    updateProfile({
-      name: clipName(name),
-      currency,
-      customCurrencies,
-      hourlyRate: Math.max(1, money.skipHourly || 150),
-      funMoneyMonthly: money.joyDefault,
-      rateSet: true,
-      seenWelcome: true,
-    });
-    navigate({ to: "/" });
-  }
-
   function back() {
     if (step === 0) {
       navigate({ to: "/" });
@@ -177,7 +164,6 @@ function StartPage() {
           onCurrency={pickCurrency}
           onAddCurrency={addCurrency}
           onNext={() => setStep(1)}
-          onSkip={useTypical}
         />
       )}
       {step === 1 && (
@@ -217,7 +203,6 @@ function WhyStep({
   onCurrency,
   onAddCurrency,
   onNext,
-  onSkip,
 }: {
   name: string;
   onName: (v: string) => void;
@@ -226,10 +211,7 @@ function WhyStep({
   onCurrency: (code: string) => void;
   onAddCurrency: (raw: string) => void;
   onNext: () => void;
-  onSkip: () => void;
 }) {
-  const money = getCurrency(currency);
-
   return (
     <>
       <div className="min-h-0 flex-1 overflow-y-auto">
@@ -270,11 +252,6 @@ function WhyStep({
         <Button size="lg" className="w-full" onClick={onNext}>
           Continue
         </Button>
-        {money.known && (
-          <Button variant="quiet" className="mt-1 w-full" onClick={onSkip}>
-            Use {formatMoney(money.skipHourly, currency)} an hour for now
-          </Button>
-        )}
       </div>
     </>
   );
@@ -389,6 +366,7 @@ function PayStep({
               max={money.joyMax}
               step={money.step}
               chips={money.joyChips}
+              prefix={prefix}
               format={(n) => formatMoney(n, currency)}
               onChange={onJoy}
             />
@@ -504,6 +482,7 @@ function MoneySlider({
   max,
   step,
   chips,
+  prefix,
   format,
   onChange,
 }: {
@@ -512,15 +491,66 @@ function MoneySlider({
   max: number;
   step: number;
   chips: number[];
+  prefix: string;
   format: (n: number) => string;
   onChange: (n: number) => void;
 }) {
-  const pct = Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(String(value || ""));
+  const pct = Math.max(
+    0,
+    Math.min(100, ((Math.min(value, max) - min) / (max - min)) * 100),
+  );
+  const pad = prefix.length > 2 ? "pl-16" : "pl-12";
+  const sliderValue = Math.min(max, Math.max(min, value));
+
+  function startEdit() {
+    setDraft(value ? String(value) : "");
+    setEditing(true);
+  }
+
+  function commit() {
+    const n = Number.parseFloat(draft.replace(/,/g, ""));
+    onChange(Number.isFinite(n) && n >= 0 ? n : 0);
+    setEditing(false);
+  }
+
   return (
     <div className="mt-3">
-      <p className="font-display text-3xl tabular tracking-tight text-ink">
-        {format(value)}
-      </p>
+      {editing ? (
+        <div className="relative">
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-display text-xl text-faint">
+            {prefix}
+          </span>
+          <Input
+            autoFocus
+            inputMode="decimal"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value.replace(/[^0-9.]/g, ""))}
+            onBlur={commit}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                (e.target as HTMLInputElement).blur();
+              }
+              if (e.key === "Escape") setEditing(false);
+            }}
+            className={cn("h-16 font-display text-3xl tabular tracking-tight", pad)}
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={startEdit}
+          className="flex w-full items-center gap-2 text-left"
+          aria-label="Type monthly joy money"
+        >
+          <span className="font-display text-3xl tabular tracking-tight text-ink">
+            {format(value)}
+          </span>
+          <PencilLine className="size-4 shrink-0 text-faint" aria-hidden />
+        </button>
+      )}
       <div className="relative mt-3 h-8">
         <div className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-harbour-soft" />
         <div
@@ -532,12 +562,15 @@ function MoneySlider({
           min={min}
           max={max}
           step={step}
-          value={value}
+          value={sliderValue}
+          onMouseDown={() => {
+            if (editing) commit();
+          }}
           onChange={(e) => onChange(Number(e.target.value))}
           className="absolute inset-0 w-full cursor-pointer appearance-none bg-transparent accent-harbour"
           aria-valuemin={min}
           aria-valuemax={max}
-          aria-valuenow={value}
+          aria-valuenow={sliderValue}
         />
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
@@ -545,7 +578,10 @@ function MoneySlider({
           <button
             key={n}
             type="button"
-            onClick={() => onChange(n)}
+            onClick={() => {
+              setEditing(false);
+              onChange(n);
+            }}
             className={cn(
               "h-9 rounded-full border px-3 text-sm",
               value === n
