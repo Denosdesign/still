@@ -19,6 +19,8 @@ function WaitlistPage() {
   }, []);
 
   const waiting = selectWaiting(wants, now);
+  const cooling = waiting.filter((w) => !w.hideUntilReview);
+  const tucked = waiting.filter((w) => w.hideUntilReview);
   const ready = selectReady(wants, now);
 
   return (
@@ -60,11 +62,22 @@ function WaitlistPage() {
               ))}
             </section>
           )}
-          {waiting.length > 0 && (
+          {cooling.length > 0 && (
             <section className="space-y-2">
               <h2 className="font-display text-xl">Still cooling</h2>
-              {waiting.map((w) => (
+              {cooling.map((w) => (
                 <WantCard key={w.id} want={w} now={now} />
+              ))}
+            </section>
+          )}
+          {tucked.length > 0 && (
+            <section className="space-y-2">
+              <h2 className="font-display text-lg text-muted">Hidden until review</h2>
+              <p className="text-sm text-faint">
+                Still counting. Back on Home when time’s up.
+              </p>
+              {tucked.map((w) => (
+                <WantCard key={w.id} want={w} now={now} muted />
               ))}
             </section>
           )}
