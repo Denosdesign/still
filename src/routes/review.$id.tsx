@@ -179,17 +179,17 @@ function ReviewPage() {
           <p className="font-display text-xl">Has the itch faded?</p>
           <div className="mt-auto flex flex-col gap-2 pt-6">
             <Button size="lg" className="w-full" onClick={keep}>
-              It faded — keep the money
+              It faded. Keep the money
             </Button>
             <Button size="lg" variant="secondary" className="w-full" onClick={holdMore}>
-              Need more time — hold 48 hours
+              Need more time. Hold 48 hours
             </Button>
             <button
               type="button"
               onClick={buy}
               className="py-3 text-sm text-muted"
             >
-              Still want it — buy with intention
+              Still want it. Buy with intention
             </button>
           </div>
         </div>
