@@ -38,6 +38,7 @@ function Home() {
   }
 
   const waiting = selectWaiting(wants, now);
+  const holdingOnHome = waiting.filter((w) => !w.hideUntilReview);
   const ready = selectReady(wants, now);
   const kept = selectKeptTotal(wants);
   const spent = selectMonthSpent(wants);
@@ -132,18 +133,18 @@ function Home() {
           </section>
         )}
 
-        {waiting.length > 0 && (
+        {holdingOnHome.length > 0 && (
           <section>
             <div className="mb-2 flex items-baseline justify-between">
               <p className="font-display text-lg">Holding</p>
-              {waiting.length > 2 ? (
+              {waiting.length > Math.min(2, holdingOnHome.length) ? (
                 <Link to="/waitlist" className="text-sm text-harbour">
                   See all
                 </Link>
               ) : null}
             </div>
             <div className="space-y-2">
-              {waiting.slice(0, 2).map((w) => (
+              {holdingOnHome.slice(0, 2).map((w) => (
                 <WantCard key={w.id} want={w} now={now} />
               ))}
             </div>
