@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, Heart, PauseCircle } from "lucide-react";
+import { Award, Feather, Heart, PauseCircle, Sparkles, Sun } from "lucide-react";
 import { Shell } from "@/components/shell";
 import { formatDateGb } from "@/lib/format";
 import { fromHkd, useMoney } from "@/lib/currency";
@@ -9,7 +9,8 @@ import {
   selectStreak,
   useStillStore,
 } from "@/lib/store";
-import type { Want } from "@/lib/types";
+import type { Gladness, Want } from "@/lib/types";
+import { todayKey } from "@/lib/utils";
 
 export const Route = createFileRoute("/wins")({ component: WinsPage });
 
@@ -24,11 +25,14 @@ function WinsPage() {
   const kept = selectKeptTotal(wants);
   const spent = selectMonthSpent(wants);
   const streak = selectStreak(checkIns, wants, new Date(), walkAways);
-  const pauses = wants.length;
+  const pauses = wants.filter((w) => !w.nearMiss).length;
   const letGo =
-    wants.filter((w) => w.status === "kept" || w.status === "walked").length +
+    wants.filter((w) => !w.nearMiss && (w.status === "kept" || w.status === "walked")).length +
     walkAways.length;
   const considered = wants.filter((w) => w.status === "bought").length;
+  const misses = wants
+    .filter((w) => w.nearMiss)
+    .sort((a, b) => a.createdAt - b.createdAt);
   const { format, code } = useMoney();
   const grand = fromHkd(1000, code);
   const badges = badgesFor(
@@ -64,6 +68,8 @@ function WinsPage() {
         <Mini k="Let go" v={String(letGo)} />
         <Mini k="Rhythm" v={streak ? `${streak}d` : "—"} />
       </div>
+
+      <GladRecord misses={misses} />
 
       <section className="mt-8">
         <h2 className="font-display text-xl">Marks of showing up</h2>
@@ -112,6 +118,112 @@ function WinsPage() {
       </section>
     </Shell>
   );
+}
+
+function feelBar(gladness?: Gladness) {
+  if (gladness === "relieved") return "h-11 bg-harbour";
+  if (gladness === "lighter") return "h-5 bg-harbour-soft";
+  return "h-8 bg-sage";
+}
+
+function GladRecord({ misses }: { misses: Want[] }) {
+  const { format } = useMoney();
+  const money = misses.reduce((sum, w) => sum + w.priceHkd, 0);
+  const counts = {
+    lighter: misses.filter((w) => w.gladness === "lighter").length,
+    glad: misses.filter((w) => w.gladness === "glad" || !w.gladness).length,
+    relieved: misses.filter((w) => w.gladness === "relieved").length,
+  };
+  const days = lastDays(14, misses);
+
+  return (
+    <section className="mt-8">
+      <h2 className="font-display text-xl">Glad I didn’t</h2>
+      <p className="mt-1 text-sm text-muted">
+        Each mark pairs a skip with how it felt. Looking back is how the relief sticks.
+      </p>
+      {misses.length === 0 ? (
+        <p className="mt-4 rounded-[var(--radius-lg)] border border-dashed border-border px-4 py-5 text-sm text-muted">
+          The next skip lives here.{" "}
+          <Link to="/didnt-buy" className="text-harbour">
+            Log it
+          </Link>{" "}
+          while the relief is warm.
+        </p>
+      ) : (
+        <>
+          <div className="mt-4 rounded-[var(--radius-xl)] border border-border bg-card px-4 py-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="font-display text-3xl tabular text-ink">{misses.length}</p>
+              <p className="text-sm text-muted">
+                {format(money)} stayed
+              </p>
+            </div>
+            <div className="mt-4 flex h-14 items-end gap-1">
+              {days.map((day) => (
+                <div
+                  key={day.key}
+                  className="flex min-w-0 flex-1 flex-col-reverse items-center gap-0.5"
+                  title={day.key}
+                >
+                  {day.items.length === 0 ? (
+                    <span className="h-1 w-full rounded-full bg-border" />
+                  ) : (
+                    day.items.slice(0, 3).map((w) => (
+                      <span
+                        key={w.id}
+                        className={`w-full rounded-sm ${feelBar(w.gladness)}`}
+                      />
+                    ))
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] text-faint">Last 14 days</p>
+          </div>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            <FeelMini icon={Feather} label="Lighter" n={counts.lighter} />
+            <FeelMini icon={Sun} label="Glad" n={counts.glad} />
+            <FeelMini icon={Sparkles} label="Relieved" n={counts.relieved} />
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function FeelMini({
+  icon: Icon,
+  label,
+  n,
+}: {
+  icon: typeof Feather;
+  label: string;
+  n: number;
+}) {
+  return (
+    <div className="rounded-[var(--radius-lg)] bg-card px-3 py-3">
+      <Icon className="size-4 text-harbour" strokeWidth={1.8} />
+      <p className="mt-2 font-display text-xl tabular">{n}</p>
+      <p className="text-[11px] uppercase tracking-[0.12em] text-faint">{label}</p>
+    </div>
+  );
+}
+
+function lastDays(n: number, misses: Want[]) {
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const days: { key: string; items: Want[] }[] = [];
+  for (let i = n - 1; i >= 0; i -= 1) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = todayKey(d);
+    days.push({
+      key,
+      items: misses.filter((w) => todayKey(new Date(w.createdAt)) === key),
+    });
+  }
+  return days;
 }
 
 function Mini({ k, v }: { k: string; v: string }) {
