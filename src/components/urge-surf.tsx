@@ -67,10 +67,11 @@ export function UrgeSurf({
           <Button size="lg" onClick={onDone} className="w-full">
             I rode it
           </Button>
-        ) : null}
-        <Button variant="quiet" className={done ? "mt-1 w-full" : "w-full"} onClick={onSkip}>
-          Skip — I want to hold it
-        </Button>
+        ) : (
+          <Button variant="quiet" className="w-full" onClick={onSkip}>
+            Skip — I want to hold it
+          </Button>
+        )}
       </div>
     </div>
   );
