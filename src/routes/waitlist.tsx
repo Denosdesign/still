@@ -72,7 +72,7 @@ function WaitlistPage() {
           )}
           {tucked.length > 0 && (
             <section className="space-y-2">
-              <h2 className="font-display text-lg text-muted">Hidden until review</h2>
+              <h2 className="font-display text-lg text-muted">Hidden from homepage</h2>
               <p className="text-sm text-faint">
                 Still counting. It comes back when time’s up.
               </p>
