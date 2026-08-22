@@ -4,7 +4,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/shell";
 import { WantCard } from "@/components/want-card";
 import { Button } from "@/components/ui/button";
-import { CalendarRemind } from "@/components/hold-loop";
 import { selectReady, selectWaiting, useStillStore } from "@/lib/store";
 
 export const Route = createFileRoute("/waitlist")({ component: WaitlistPage });
@@ -67,17 +66,6 @@ function WaitlistPage() {
               {waiting.map((w) => (
                 <WantCard key={w.id} want={w} now={now} />
               ))}
-              {waiting[0]?.waitUntil ? (
-                <div className="pt-2">
-                  <CalendarRemind
-                    id={waiting[0].id}
-                    name={waiting[0].name}
-                    at={waiting[0].waitUntil}
-                    variant="ghost"
-                    size="md"
-                  />
-                </div>
-              ) : null}
             </section>
           )}
         </div>
