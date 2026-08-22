@@ -287,6 +287,8 @@ function PayStep({
   const selected = amountEquals(raw, chips);
   const prefix = money.symbol.trim() || money.code;
   const pad = prefix.length > 2 ? "pl-16" : "pl-12";
+  const monthlyPay = fromHourlyRate(hourly, "month");
+  const joyMax = joySliderMax(monthlyPay, money);
 
   return (
     <>
@@ -363,7 +365,7 @@ function PayStep({
             <MoneySlider
               value={joy}
               min={0}
-              max={money.joyMax}
+              max={joyMax}
               step={money.step}
               chips={money.joyChips}
               prefix={prefix}
@@ -542,13 +544,15 @@ function MoneySlider({
         <button
           type="button"
           onClick={startEdit}
-          className="flex w-full items-center gap-2 text-left"
+          className="inline-flex items-baseline gap-[0.35em] font-display text-3xl tabular tracking-tight text-ink"
           aria-label="Type monthly joy money"
         >
-          <span className="font-display text-3xl tabular tracking-tight text-ink">
-            {format(value)}
-          </span>
-          <PencilLine className="size-4 shrink-0 text-faint" aria-hidden />
+          <span>{format(value)}</span>
+          <PencilLine
+            className="relative top-[0.08em] size-[0.48em] shrink-0 text-faint"
+            strokeWidth={1.8}
+            aria-hidden
+          />
         </button>
       )}
       <div className="relative mt-3 h-8">
@@ -595,6 +599,19 @@ function MoneySlider({
       </div>
     </div>
   );
+}
+
+function joySliderMax(
+  monthlyPay: number,
+  money: { joyMax: number; skipHourly: number; step: number },
+) {
+  const floor = money.joyMax;
+  if (!(monthlyPay > 0) || floor <= 0) return floor;
+  const typicalMonth = fromHourlyRate(money.skipHourly, "month");
+  const ratio = typicalMonth > 0 ? floor / typicalMonth : 0.3;
+  const scaled = monthlyPay * ratio;
+  const stepped = Math.round(scaled / money.step) * money.step;
+  return Math.max(floor, stepped);
 }
 
 function amountEquals(raw: string, chips: number[]) {
