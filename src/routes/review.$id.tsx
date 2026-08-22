@@ -133,12 +133,12 @@ function ReviewPage() {
                 className="w-full py-2 text-sm text-muted"
                 onClick={() => setHideUntilReview(want.id, false)}
               >
-                Show on Home again
+                Show it when I open the app
               </button>
             ) : hideConfirm ? (
               <div className="px-1 pt-1 text-center">
                 <p className="text-sm leading-relaxed text-muted">
-                  It leaves Home. The wait still runs.
+                  You won’t see it when you open the app. The wait still runs.
                 </p>
                 <button
                   type="button"
