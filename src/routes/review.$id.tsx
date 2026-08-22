@@ -94,7 +94,7 @@ function ReviewPage() {
       )}
 
       {want.status === "waiting" && !ready ? (
-        <div className="mt-8 flex flex-1 flex-col">
+        <div className="mt-8">
           <p className="text-sm text-muted">Come back</p>
           <p className="font-display text-3xl tabular text-harbour">
             {want.waitUntil ? formatWhenGb(want.waitUntil) : "when the wait ends"}
@@ -103,18 +103,18 @@ function ReviewPage() {
             {want.waitUntil ? `${formatCountdown(remaining)} left. ` : ""}
             The wait is still running. Nothing to decide yet.
           </p>
-          <div className="mt-auto flex flex-col gap-2 pt-8">
+          <div className="mt-8 flex flex-col gap-2 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
             {want.waitUntil ? (
               <CalendarRemind
                 id={want.id}
                 name={want.name}
                 at={want.waitUntil}
-                variant="secondary"
                 label="Add a calendar reminder"
               />
             ) : null}
             <Button
               size="lg"
+              variant="secondary"
               className="w-full"
               onClick={() => navigate({ to: "/waitlist" })}
             >
