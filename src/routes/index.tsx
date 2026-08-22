@@ -8,6 +8,7 @@ import { WantCard } from "@/components/want-card";
 import { InstallHome } from "@/components/hold-loop";
 import { greeting } from "@/lib/format";
 import { useMoney } from "@/lib/currency";
+import { INSTALL_NUDGE_LIMIT, useStandalone } from "@/lib/install";
 import { loudestPattern } from "@/lib/science";
 import {
   selectKeptTotal,
@@ -24,6 +25,7 @@ function Home() {
   const wants = useStillStore((s) => s.wants);
   const updateProfile = useStillStore((s) => s.updateProfile);
   const [now, setNow] = useState(Date.now());
+  const onHomeScreen = useStandalone();
 
   useEffect(() => {
     const t = window.setInterval(() => setNow(Date.now()), 30000);
@@ -49,13 +51,22 @@ function Home() {
   const showJoy = profile.setupDone;
   const showNumbers = showKept || showJoy;
   const holdingEmpty = waiting.length === 0 && ready.length === 0;
-  const hasHeld = wants.some(
-    (w) => !w.sample && (w.status === "waiting" || w.waitHours > 0),
+  const latestHold = wants
+    .filter((w) => !w.sample && (w.status === "waiting" || w.waitHours > 0))
+    .sort((a, b) => b.createdAt - a.createdAt)[0];
+  const snoozes = profile.installSnoozeCount || 0;
+  const showInstall = Boolean(
+    latestHold &&
+      !onHomeScreen &&
+      !profile.installPromptSeen &&
+      snoozes < INSTALL_NUDGE_LIMIT &&
+      profile.installPromptWantId !== latestHold.id,
   );
-  const showInstall =
-    hasHeld &&
+  const showInstallQuiet =
+    Boolean(latestHold) &&
+    !onHomeScreen &&
     !profile.installPromptSeen &&
-    Date.now() >= (profile.installSnoozeUntil || 0);
+    snoozes >= INSTALL_NUDGE_LIMIT;
 
   return (
     <Shell>
@@ -139,15 +150,26 @@ function Home() {
           </section>
         )}
 
-        {showInstall ? (
+        {showInstall && latestHold ? (
           <InstallHome
             onLater={() =>
               updateProfile({
-                installSnoozeUntil: Date.now() + 24 * 60 * 60 * 1000,
+                installSnoozeCount: snoozes + 1,
+                installPromptWantId: latestHold.id,
               })
             }
             onInstalled={() => updateProfile({ installPromptSeen: true })}
           />
+        ) : null}
+
+        {showInstallQuiet ? (
+          <p className="text-center text-sm text-muted">
+            <Link to="/settings" className="text-harbour">
+              Add to Home Screen
+            </Link>
+            {" "}
+            lives in You, if the shop still wins the race.
+          </p>
         ) : null}
 
         {holdingEmpty && (
