@@ -37,9 +37,9 @@ const FEEL: {
 
 const RIBBON_GREENS = ["#dce6e1", "#8aa397", "#3e5c4f", "#2c4a42", "#223a34"];
 const RIBBON_COUNT: Record<Gladness, number> = {
-  lighter: 22,
-  glad: 48,
-  relieved: 72,
+  lighter: 10,
+  glad: 20,
+  relieved: 34,
 };
 
 type Ribbon = {
@@ -58,18 +58,17 @@ type Ribbon = {
 function makeRibbons(level: Gladness): Ribbon[] {
   const n = RIBBON_COUNT[level];
   return Array.from({ length: n }, (_, i) => {
-    const spin = 160 + Math.random() * 420;
     return {
       id: i,
-      left: `${Math.random() * 100}%`,
-      width: 2 + Math.random() * 2.5,
-      height: 7 + Math.random() * 8,
+      left: `${8 + Math.random() * 84}%`,
+      width: 3 + Math.random() * 2,
+      height: 52 + Math.random() * 48,
       color: RIBBON_GREENS[(i + Math.floor(Math.random() * 3)) % RIBBON_GREENS.length],
-      delay: `${Math.random() * 0.55}s`,
-      duration: `${2.8 + Math.random() * 1.8}s`,
-      r0: `${Math.random() * 360}deg`,
-      r1: `${Math.random() * 360 + spin}deg`,
-      dx: `${(Math.random() - 0.5) * 48}px`,
+      delay: `${Math.random() * 0.45}s`,
+      duration: `${3.6 + Math.random() * 1.8}s`,
+      r0: `${-40 + Math.random() * 80}deg`,
+      r1: `${180 + Math.random() * 220}deg`,
+      dx: `${(Math.random() - 0.5) * 140}px`,
     };
   });
 }
@@ -93,7 +92,7 @@ function DidntBuyPage() {
 
   useEffect(() => {
     if (!ribbons) return;
-    const t = window.setTimeout(() => setRibbons(null), 5200);
+    const t = window.setTimeout(() => setRibbons(null), 7000);
     return () => window.clearTimeout(t);
   }, [ribbons]);
 
