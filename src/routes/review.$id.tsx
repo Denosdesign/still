@@ -131,7 +131,10 @@ function ReviewPage() {
               <button
                 type="button"
                 className="w-full py-2 text-sm text-muted"
-                onClick={() => setHideUntilReview(want.id, false)}
+                onClick={() => {
+                  setHideUntilReview(want.id, false);
+                  navigate({ to: "/waitlist" });
+                }}
               >
                 Show on homepage again
               </button>
