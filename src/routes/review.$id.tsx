@@ -26,6 +26,7 @@ function ReviewPage() {
   const profile = useStillStore((s) => s.profile);
   const decide = useStillStore((s) => s.decide);
   const extendWait = useStillStore((s) => s.extendWait);
+  const setHideUntilReview = useStillStore((s) => s.setHideUntilReview);
   const praise = useMemo(() => pick(KEEP_PRAISE, id.length), [id]);
   const { format } = useMoney();
 
@@ -125,6 +126,20 @@ function ReviewPage() {
                 label="Add a calendar reminder"
               />
             ) : null}
+            <button
+              type="button"
+              className="w-full py-2 text-sm text-muted"
+              onClick={() => {
+                if (want.hideUntilReview) {
+                  setHideUntilReview(want.id, false);
+                  return;
+                }
+                setHideUntilReview(want.id, true);
+                navigate({ to: "/waitlist" });
+              }}
+            >
+              {want.hideUntilReview ? "Show on Home again" : "Hide until review"}
+            </button>
           </div>
         </div>
       ) : null}
