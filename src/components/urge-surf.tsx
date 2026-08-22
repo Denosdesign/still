@@ -69,7 +69,7 @@ export function UrgeSurf({
           </Button>
         ) : (
           <Button variant="quiet" className="w-full" onClick={onSkip}>
-            Skip — I want to hold it
+            Skip. I want to hold it
           </Button>
         )}
       </div>
