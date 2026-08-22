@@ -289,6 +289,18 @@ function PayStep({
   const pad = prefix.length > 2 ? "pl-16" : "pl-12";
   const monthlyPay = fromHourlyRate(hourly, "month");
   const joyMax = joySliderMax(monthlyPay, money);
+  const joyChips =
+    monthlyPay > 0
+      ? JOY_PCTS.map((p) => ({
+          value: Math.round(((monthlyPay * p) / 100) / money.step) * money.step,
+          label: `${p}%`,
+        }))
+      : money.joyChips.map((n) => ({
+          value: n,
+          label: formatMoney(n, currency),
+        }));
+  const joyHintText =
+    monthlyPay > 0 && joy > 0 ? joyHint((joy / monthlyPay) * 100) : "";
 
   return (
     <>
@@ -367,7 +379,8 @@ function PayStep({
               min={0}
               max={joyMax}
               step={money.step}
-              chips={money.joyChips}
+              chips={joyChips}
+              hint={joyHintText}
               prefix={prefix}
               format={(n) => formatMoney(n, currency)}
               onChange={onJoy}
@@ -484,6 +497,7 @@ function MoneySlider({
   max,
   step,
   chips,
+  hint,
   prefix,
   format,
   onChange,
@@ -492,7 +506,8 @@ function MoneySlider({
   min: number;
   max: number;
   step: number;
-  chips: number[];
+  chips: { value: number; label: string }[];
+  hint?: string;
   prefix: string;
   format: (n: number) => string;
   onChange: (n: number) => void;
@@ -578,25 +593,28 @@ function MoneySlider({
         />
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
-        {chips.map((n) => (
+        {chips.map((chip) => (
           <button
-            key={n}
+            key={chip.label}
             type="button"
             onClick={() => {
               setEditing(false);
-              onChange(n);
+              onChange(chip.value);
             }}
             className={cn(
               "h-9 rounded-full border px-3 text-sm",
-              value === n
+              Math.abs(value - chip.value) <= step
                 ? "border-harbour bg-harbour-soft text-harbour"
                 : "border-border bg-card text-muted",
             )}
           >
-            {format(n)}
+            {chip.label}
           </button>
         ))}
       </div>
+      {hint ? (
+        <p className="mt-3 text-xs leading-relaxed text-faint">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -610,8 +628,27 @@ function joySliderMax(
   const typicalMonth = fromHourlyRate(money.skipHourly, "month");
   const ratio = typicalMonth > 0 ? floor / typicalMonth : 0.3;
   const scaled = monthlyPay * ratio;
+  const thirty = Math.round((monthlyPay * 0.3) / money.step) * money.step;
   const stepped = Math.round(scaled / money.step) * money.step;
-  return Math.max(floor, stepped);
+  return Math.max(floor, stepped, thirty);
+}
+
+const JOY_PCTS = [10, 15, 20, 25, 30] as const;
+
+function joyHint(pct: number) {
+  if (pct < 12.5) {
+    return "Conservative. For a large savings goal, or if you want assets to grow quickly.";
+  }
+  if (pct < 17.5) {
+    return "Balanced — enough joy without feeling too tight.";
+  }
+  if (pct < 22.5) {
+    return "Steady income, and the savings rate is already enough.";
+  }
+  if (pct < 27.5) {
+    return "More weight on lifestyle and enjoying it now.";
+  }
+  return "Only if this does not eat into savings.";
 }
 
 function amountEquals(raw: string, chips: number[]) {
