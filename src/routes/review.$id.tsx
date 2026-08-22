@@ -138,7 +138,7 @@ function ReviewPage() {
             ) : hideConfirm ? (
               <div className="px-1 pt-1 text-center">
                 <p className="text-sm leading-relaxed text-muted">
-                  The wait still runs.
+                  It only hides from the homepage. The wait still runs.
                 </p>
                 <button
                   type="button"
@@ -148,7 +148,7 @@ function ReviewPage() {
                     navigate({ to: "/waitlist" });
                   }}
                 >
-                  Hide from homepage
+                  I understand
                 </button>
                 <button
                   type="button"
