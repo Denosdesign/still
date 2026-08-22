@@ -57,6 +57,8 @@ type StillState = {
     waitHours: number;
     note?: string;
     sample?: boolean;
+    nearMiss?: boolean;
+    gladness?: Want["gladness"];
   }) => Want;
   decide: (id: string, status: Extract<WantStatus, "kept" | "bought">, extraWaitHours?: number) => void;
   extendWait: (id: string, extraHours: number) => void;
@@ -130,6 +132,8 @@ export const useStillStore = create<StillState>()(
           note: input.note ?? "",
           sample: input.sample,
           hideUntilReview: false,
+          nearMiss: Boolean(input.nearMiss),
+          gladness: input.gladness,
         };
         set({ wants: [want, ...get().wants] });
         return want;
@@ -219,7 +223,11 @@ export const useStillStore = create<StillState>()(
           ...p,
           wants: (Array.isArray(p.wants) ? p.wants : current.wants)
             .filter((w) => w && !w.sample)
-            .map((w) => ({ ...w, hideUntilReview: Boolean(w.hideUntilReview) })),
+            .map((w) => ({
+              ...w,
+              hideUntilReview: Boolean(w.hideUntilReview),
+              nearMiss: Boolean(w.nearMiss),
+            })),
           profile: {
             ...DEFAULT_PROFILE,
             ...(p.profile ?? current.profile),
