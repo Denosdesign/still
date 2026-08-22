@@ -74,7 +74,7 @@ function WaitlistPage() {
             <section className="space-y-2">
               <h2 className="font-display text-lg text-muted">Hidden until review</h2>
               <p className="text-sm text-faint">
-                Still counting. Back on Home when time’s up.
+                Still counting. It comes back when time’s up.
               </p>
               {tucked.map((w) => (
                 <WantCard key={w.id} want={w} now={now} muted />
