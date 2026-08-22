@@ -22,6 +22,8 @@ function bindInstall() {
 
 bindInstall();
 
+export const INSTALL_NUDGE_LIMIT = 3;
+
 export function isStandalone() {
   if (typeof window === "undefined") return false;
   const nav = window.navigator as Navigator & { standalone?: boolean };
