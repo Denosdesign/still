@@ -162,10 +162,10 @@ function SettingsPage() {
       <section className="mt-10">
         <h2 className="font-display text-xl">How to use Still</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted">
-          <li>When a want hits, open the app before you open the shop.</li>
-          <li>Name the thing and the price. Ride the ninety-second wave.</li>
-          <li>Hold it on the waitlist. Put a calendar reminder so the wait has an ending.</li>
-          <li>Review it only when the timer is done. What was true at pause is the evidence.</li>
+          <li>When a want hits, open Still before the shop.</li>
+          <li>Name the thing and the price. Ride the ninety-second wave. Then hold it, let it go, or buy with a clear head.</li>
+          <li>If you hold, review it only when the timer is done. What was true at pause is the evidence.</li>
+          <li>If you already walked away, tap Glad I didn’t. Name it, what you didn’t spend, and how it felt — while the relief is warm.</li>
         </ol>
         <Link to="/insights" className="mt-4 inline-block text-sm text-harbour">
           Read the science behind each step
