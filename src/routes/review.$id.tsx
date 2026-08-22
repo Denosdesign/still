@@ -138,9 +138,7 @@ function ReviewPage() {
             ) : hideConfirm ? (
               <div className="px-1 pt-1 text-center">
                 <p className="text-sm leading-relaxed text-muted">
-                  It leaves Home until{" "}
-                  {want.waitUntil ? formatWhenGb(want.waitUntil) : "review"}.
-                  The wait still runs. This does not keep the money.
+                  It leaves Home. The wait still runs.
                 </p>
                 <button
                   type="button"
