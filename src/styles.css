@@ -202,6 +202,46 @@
   }
 }
 
+.glad-cell[data-on="lighter"] {
+  animation: glad-lift 0.55s var(--ease-smooth-out) both;
+}
+.glad-cell[data-on="glad"] {
+  animation: glad-pulse 0.55s var(--ease-smooth-out) both;
+}
+.glad-cell[data-on="relieved"] {
+  animation: glad-bloom 0.7s var(--ease-smooth-out) both;
+}
+.glad-icon-float {
+  animation: glad-float 2.4s ease-in-out infinite;
+}
+.glad-icon-spark {
+  animation: glad-spark 1.2s ease-out both;
+}
+
+@keyframes glad-lift {
+  from { transform: translateY(6px); opacity: 0.7; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes glad-pulse {
+  0% { transform: scale(0.94); }
+  55% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes glad-bloom {
+  0% { transform: scale(0.88); }
+  45% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes glad-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes glad-spark {
+  0% { transform: scale(0.6) rotate(-12deg); opacity: 0; }
+  55% { transform: scale(1.18) rotate(8deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }
