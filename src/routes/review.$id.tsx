@@ -133,7 +133,7 @@ function ReviewPage() {
                 className="w-full py-2 text-sm text-muted"
                 onClick={() => {
                   setHideUntilReview(want.id, false);
-                  navigate({ to: "/waitlist" });
+                  navigate({ to: "/" });
                 }}
               >
                 Show on homepage again
@@ -148,7 +148,7 @@ function ReviewPage() {
                   className="mt-3 w-full py-2 text-sm font-medium text-harbour"
                   onClick={() => {
                     setHideUntilReview(want.id, true);
-                    navigate({ to: "/waitlist" });
+                    navigate({ to: "/" });
                   }}
                 >
                   I understand
