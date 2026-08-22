@@ -41,9 +41,9 @@ export function TagPicker({
   const canCreate = searching && !exact;
 
   const recents = uniqueTags(recent);
-  const compact = uniqueTags(
-    recents.length > 0 ? recents.slice(0, 4) : [...presets].slice(0, 4),
-  ).filter((t) => t !== value);
+  const compact = uniqueTags([...recents, ...library])
+    .filter((t) => t !== value)
+    .slice(0, 4);
 
   const visible = searching
     ? library.filter((t) => tagMatches(t, trimmed))
