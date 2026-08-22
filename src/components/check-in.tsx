@@ -70,7 +70,7 @@ export function DailyCheckIn() {
           checkIn(level, thanks);
         }}
       >
-        Log it — that counts as showing up
+        Log it. That counts as showing up
       </Button>
     </div>
   );
