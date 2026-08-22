@@ -77,6 +77,7 @@ export type Profile = {
   currency: string;
   customCurrencies: string[];
   installPromptSeen: boolean;
+  installSnoozeUntil: number;
 };
 
 export const DEFAULT_PROFILE: Profile = {
@@ -91,6 +92,7 @@ export const DEFAULT_PROFILE: Profile = {
   currency: "HKD",
   customCurrencies: [],
   installPromptSeen: false,
+  installSnoozeUntil: 0,
 };
 
 export const EMPTY_HALT: HaltState = {
