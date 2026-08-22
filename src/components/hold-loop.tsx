@@ -15,12 +15,14 @@ export function CalendarRemind({
   at,
   variant = "primary",
   size = "lg",
+  label = "Remind me at review time",
 }: {
   id: string;
   name: string;
   at: number;
   variant?: "primary" | "secondary" | "ghost";
   size?: "lg" | "md";
+  label?: string;
 }) {
   const [saved, setSaved] = useState(false);
 
@@ -31,7 +33,7 @@ export function CalendarRemind({
 
   return (
     <Button variant={variant} size={size} className="w-full" onClick={add}>
-      {saved ? "Saved a calendar file \u2014 open it" : "Remind me at review time"}
+      {saved ? "Saved a calendar file — open it" : label}
     </Button>
   );
 }
@@ -102,7 +104,7 @@ export function InstallSteps({
             <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10">
               <Share className="size-3.5" strokeWidth={1.8} />
             </span>
-            <span>Tap Share in Safari \u2014 the square with the arrow.</span>
+            <span>Tap Share in Safari — the square with the arrow.</span>
           </li>
           <li className="flex gap-3">
             <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10">
