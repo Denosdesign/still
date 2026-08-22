@@ -77,6 +77,7 @@ function pickData(raw: unknown): StillBackup["data"] | null {
           : "HKD",
       customCurrencies: asArray(profileIn.customCurrencies, isString),
       installPromptSeen: Boolean(profileIn.installPromptSeen),
+      installSnoozeUntil: Number(profileIn.installSnoozeUntil) || 0,
     },
     wants: asArray(source.wants, isWant).filter((w) => !w.sample),
     checkIns: asArray(source.checkIns, isCheckIn),
