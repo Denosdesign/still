@@ -769,7 +769,7 @@ function DecideStep({
         <p className="mt-3 font-display text-2xl">Hold it</p>
         <p className="mt-1 text-sm text-harbour-fg/75">
           Put {format(price)} on a cooling-off wait. Recommended: {waitLabel(recWait)}
-          {haltHit ? " — or until morning, given how you feel." : "."}
+          {haltHit ? ". Or until morning, given how you feel." : "."}
         </p>
       </button>
       <div className="flex flex-wrap gap-2 px-1">
@@ -795,7 +795,7 @@ function DecideStep({
         onClick={onBuy}
         className="rounded-[var(--radius-lg)] px-2 py-3 text-left text-sm text-muted"
       >
-        Buy with intention — I have thought it through
+        Buy with intention. I have thought it through
       </button>
     </div>
   );
@@ -851,7 +851,7 @@ function DoneStep({
             <p className="text-sm text-muted">You walked every step</p>
             <p className="font-display text-3xl text-harbour">Nothing logged</p>
             <p className="mt-2 text-sm text-muted">
-              Next time, bring a real want. It will sit on your waitlist — not in a bag.
+              Next time, bring a real want. It will sit on your waitlist, not in a bag.
             </p>
           </>
         ) : outcome === "waiting" ? (
