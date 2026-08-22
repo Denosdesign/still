@@ -37,9 +37,9 @@ const FEEL: {
 
 const RIBBON_GREENS = ["#dce6e1", "#8aa397", "#3e5c4f", "#2c4a42", "#223a34"];
 const RIBBON_COUNT: Record<Gladness, number> = {
-  lighter: 16,
-  glad: 42,
-  relieved: 88,
+  lighter: 22,
+  glad: 48,
+  relieved: 72,
 };
 
 type Ribbon = {
@@ -62,14 +62,14 @@ function makeRibbons(level: Gladness): Ribbon[] {
     return {
       id: i,
       left: `${Math.random() * 100}%`,
-      width: 5 + Math.random() * 7,
-      height: 16 + Math.random() * 22,
+      width: 2 + Math.random() * 2.5,
+      height: 7 + Math.random() * 8,
       color: RIBBON_GREENS[(i + Math.floor(Math.random() * 3)) % RIBBON_GREENS.length],
-      delay: `${Math.random() * 0.28}s`,
-      duration: `${1.5 + Math.random() * 1.15}s`,
+      delay: `${Math.random() * 0.55}s`,
+      duration: `${2.8 + Math.random() * 1.8}s`,
       r0: `${Math.random() * 360}deg`,
       r1: `${Math.random() * 360 + spin}deg`,
-      dx: `${(Math.random() - 0.5) * 90}px`,
+      dx: `${(Math.random() - 0.5) * 48}px`,
     };
   });
 }
@@ -93,7 +93,7 @@ function DidntBuyPage() {
 
   useEffect(() => {
     if (!ribbons) return;
-    const t = window.setTimeout(() => setRibbons(null), 2800);
+    const t = window.setTimeout(() => setRibbons(null), 5200);
     return () => window.clearTimeout(t);
   }, [ribbons]);
 
