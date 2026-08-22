@@ -33,7 +33,7 @@ export function CalendarRemind({
 
   return (
     <Button variant={variant} size={size} className="w-full" onClick={add}>
-      {saved ? "Saved a calendar file — open it" : label}
+      {saved ? "Saved a calendar file. Open it" : label}
     </Button>
   );
 }
@@ -110,7 +110,7 @@ export function InstallSteps({
             <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10">
               <Share className="size-3.5" strokeWidth={1.8} />
             </span>
-            <span>Tap Share in Safari — the square with the arrow.</span>
+            <span>Tap Share in Safari, the square with the arrow.</span>
           </li>
           <li className="flex gap-3">
             <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10">
