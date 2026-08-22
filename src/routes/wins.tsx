@@ -123,7 +123,7 @@ function WinsPage() {
 function feelBar(gladness?: Gladness) {
   if (gladness === "relieved") return "h-11 bg-harbour";
   if (gladness === "lighter") return "h-5 bg-harbour-soft";
-  return "h-8 bg-sage";
+  return "h-8 bg-clay";
 }
 
 function GladRecord({ misses }: { misses: Want[] }) {
@@ -182,9 +182,9 @@ function GladRecord({ misses }: { misses: Want[] }) {
             <p className="mt-2 text-[11px] text-faint">Last 14 days</p>
           </div>
           <div className="mt-3 grid grid-cols-3 gap-2">
-            <FeelMini icon={Feather} label="Lighter" n={counts.lighter} />
-            <FeelMini icon={Sun} label="Glad" n={counts.glad} />
-            <FeelMini icon={Sparkles} label="Relieved" n={counts.relieved} />
+            <FeelMini icon={Feather} label="Lighter" n={counts.lighter} tone="text-sage" />
+            <FeelMini icon={Sun} label="Glad" n={counts.glad} tone="text-clay" />
+            <FeelMini icon={Sparkles} label="Relieved" n={counts.relieved} tone="text-harbour" />
           </div>
         </>
       )}
@@ -196,14 +196,16 @@ function FeelMini({
   icon: Icon,
   label,
   n,
+  tone,
 }: {
   icon: typeof Feather;
   label: string;
   n: number;
+  tone: string;
 }) {
   return (
     <div className="rounded-[var(--radius-lg)] bg-card px-3 py-3">
-      <Icon className="size-4 text-harbour" strokeWidth={1.8} />
+      <Icon className={`size-4 ${tone}`} strokeWidth={1.8} />
       <p className="mt-2 font-display text-xl tabular">{n}</p>
       <p className="text-[11px] uppercase tracking-[0.12em] text-faint">{label}</p>
     </div>
