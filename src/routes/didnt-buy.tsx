@@ -229,7 +229,7 @@ function DidntBuyPage() {
         <>
           <div className="min-h-0 flex-1 overflow-y-auto pb-4">
             <p className="text-sm text-muted">
-              Name it while the relief is warm. No pause, no wait — just what you didn’t buy.
+              Name it while the relief is warm. No pause, no wait. Just what you didn’t buy.
             </p>
             <label className="mt-6 block">
               <span className="mb-2 block text-sm font-medium text-muted">The thing</span>
