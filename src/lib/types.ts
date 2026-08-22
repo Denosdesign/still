@@ -27,6 +27,14 @@ export const SOURCES = [
 
 export type WantStatus = "waiting" | "kept" | "bought" | "walked";
 
+export const GLADNESS = [
+  { id: "lighter", label: "Lighter" },
+  { id: "glad", label: "Glad" },
+  { id: "relieved", label: "Relieved" },
+] as const;
+
+export type Gladness = (typeof GLADNESS)[number]["id"];
+
 export type HaltState = {
   hungry: boolean;
   angry: boolean;
@@ -57,6 +65,8 @@ export type Want = {
   note: string;
   sample?: boolean;
   hideUntilReview?: boolean;
+  nearMiss?: boolean;
+  gladness?: Gladness;
 };
 
 export type CheckIn = {
