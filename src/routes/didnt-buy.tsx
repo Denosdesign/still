@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Check, Feather, Sparkles, Sun } from "lucide-react";
 import { Shell } from "@/components/shell";
@@ -35,6 +35,45 @@ const FEEL: {
   },
 ];
 
+const RIBBON_GREENS = ["#dce6e1", "#8aa397", "#3e5c4f", "#2c4a42", "#223a34"];
+const RIBBON_COUNT: Record<Gladness, number> = {
+  lighter: 16,
+  glad: 42,
+  relieved: 88,
+};
+
+type Ribbon = {
+  id: number;
+  left: string;
+  width: number;
+  height: number;
+  color: string;
+  delay: string;
+  duration: string;
+  r0: string;
+  r1: string;
+  dx: string;
+};
+
+function makeRibbons(level: Gladness): Ribbon[] {
+  const n = RIBBON_COUNT[level];
+  return Array.from({ length: n }, (_, i) => {
+    const spin = 160 + Math.random() * 420;
+    return {
+      id: i,
+      left: `${Math.random() * 100}%`,
+      width: 5 + Math.random() * 7,
+      height: 16 + Math.random() * 22,
+      color: RIBBON_GREENS[(i + Math.floor(Math.random() * 3)) % RIBBON_GREENS.length],
+      delay: `${Math.random() * 0.28}s`,
+      duration: `${1.5 + Math.random() * 1.15}s`,
+      r0: `${Math.random() * 360}deg`,
+      r1: `${Math.random() * 360 + spin}deg`,
+      dx: `${(Math.random() - 0.5) * 90}px`,
+    };
+  });
+}
+
 export const Route = createFileRoute("/didnt-buy")({
   component: DidntBuyPage,
 });
@@ -47,9 +86,28 @@ function DidntBuyPage() {
   const [price, setPrice] = useState("");
   const [gladness, setGladness] = useState<Gladness | "">("");
   const [saved, setSaved] = useState(false);
+  const [ribbons, setRibbons] = useState<Ribbon[] | null>(null);
   const prefix = symbol.trim() || code;
   const pad = prefix.length > 2 ? "pl-16" : "pl-12";
   const can = name.trim().length > 1;
+
+  useEffect(() => {
+    if (!ribbons) return;
+    const t = window.setTimeout(() => setRibbons(null), 2800);
+    return () => window.clearTimeout(t);
+  }, [ribbons]);
+
+  function shower(level: Gladness) {
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    setRibbons(makeRibbons(level));
+  }
+
+  function pickFeel(id: Gladness) {
+    setGladness(id);
+    shower(id);
+  }
 
   function save() {
     if (!can) return;
@@ -68,6 +126,7 @@ function DidntBuyPage() {
       gladness: gladness || undefined,
     });
     setSaved(true);
+    if (gladness) shower(gladness);
     const vibe =
       gladness === "relieved"
         ? [18, 40, 18, 40, 28]
@@ -90,6 +149,27 @@ function DidntBuyPage() {
 
   return (
     <Shell hideNav>
+      {ribbons ? (
+        <div className="glad-ribbons" aria-hidden>
+          {ribbons.map((r) => (
+            <span
+              key={r.id}
+              className="glad-ribbon"
+              style={{
+                left: r.left,
+                width: r.width,
+                height: r.height,
+                background: r.color,
+                animationDelay: r.delay,
+                animationDuration: r.duration,
+                ["--r0" as string]: r.r0,
+                ["--r1" as string]: r.r1,
+                ["--dx" as string]: r.dx,
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
       <header className="mb-4 flex shrink-0 items-center gap-3">
         <button
           type="button"
@@ -187,7 +267,7 @@ function DidntBuyPage() {
                     <button
                       key={g.id}
                       type="button"
-                      onClick={() => setGladness(g.id)}
+                      onClick={() => pickFeel(g.id)}
                       data-on={on ? g.id : undefined}
                       className={cn(
                         "glad-cell flex flex-col items-center gap-2 rounded-[var(--radius-xl)] px-2 py-5 transition-[transform,background-color,color,box-shadow] duration-[var(--motion-quick)]",
