@@ -37,7 +37,7 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
     <div className="flex min-h-dvh flex-col items-center justify-center bg-surface px-6 text-center">
       <p className="font-display text-3xl text-harbour">Still here.</p>
       <p className="mt-3 max-w-xs text-sm text-muted">
-        Something slipped. Your pauses are safe on this device — try again.
+        Something slipped. Your pauses are safe on this device. Try again.
       </p>
       <div className="mt-8 flex flex-col items-center gap-3">
         <button
