@@ -242,6 +242,32 @@
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
+.glad-ribbons {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+}
+.glad-ribbon {
+  position: absolute;
+  top: -8%;
+  border-radius: 2px;
+  animation-name: glad-ribbon-fall;
+  animation-timing-function: cubic-bezier(0.22, 0.8, 0.36, 1);
+  animation-fill-mode: forwards;
+}
+@keyframes glad-ribbon-fall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(var(--r0));
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--dx), 118vh, 0) rotate(var(--r1));
+    opacity: 0.15;
+  }
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }
