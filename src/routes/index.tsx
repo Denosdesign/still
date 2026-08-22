@@ -98,6 +98,13 @@ function Home() {
           <ArrowRight className="absolute bottom-6 right-6 size-6 opacity-70" />
         </Link>
 
+        <Link
+          to="/didnt-buy"
+          className="block w-full rounded-[var(--radius-xl)] border border-border bg-card px-5 py-3.5 text-center text-sm font-medium text-ink shadow-[var(--shadow-card)] transition-transform active:scale-[0.98]"
+        >
+          I didn’t buy something
+        </Link>
+
         {showNumbers && (
           <section className="rounded-[var(--radius-xl)] border border-border bg-card px-4 py-4">
             <div className={`grid gap-4 ${showKept && showJoy ? "grid-cols-2" : "grid-cols-1"}`}>
