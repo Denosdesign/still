@@ -38,7 +38,13 @@ export function CalendarRemind({
   );
 }
 
-export function InstallHome({ onDismiss }: { onDismiss: () => void }) {
+export function InstallHome({
+  onLater,
+  onInstalled,
+}: {
+  onLater: () => void;
+  onInstalled?: () => void;
+}) {
   const standalone = useStandalone();
   const [steps, setSteps] = useState(false);
   const [native, setNative] = useState(false);
@@ -52,7 +58,7 @@ export function InstallHome({ onDismiss }: { onDismiss: () => void }) {
 
   async function install() {
     const ok = await promptNativeInstall();
-    if (ok) onDismiss();
+    if (ok) onInstalled?.();
     else setSteps(true);
   }
 
@@ -83,9 +89,9 @@ export function InstallHome({ onDismiss }: { onDismiss: () => void }) {
       <button
         type="button"
         className="mt-3 w-full py-2 text-sm text-harbour-fg/70"
-        onClick={onDismiss}
+        onClick={onLater}
       >
-        Not now
+        Remind me later
       </button>
     </section>
   );
