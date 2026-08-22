@@ -13,7 +13,7 @@ export function Welcome() {
           The want will pass. Your money does not have to go with it.
         </p>
         <div className="mt-10 space-y-3 text-sm text-harbour-fg/75">
-          <p>When the itch hits, open Still first — before checkout.</p>
+          <p>When the itch hits, open Still first, before checkout.</p>
           <p>We hold the want for a cooling-off, ride the urge, and keep score of what you kept.</p>
           <p>No shame if you buy. Pausing is the win.</p>
         </div>
