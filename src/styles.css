@@ -251,20 +251,23 @@
 }
 .glad-ribbon {
   position: absolute;
-  top: -8%;
-  border-radius: 2px;
+  top: -12%;
+  border-radius: 1px;
   animation-name: glad-ribbon-fall;
-  animation-timing-function: cubic-bezier(0.22, 0.8, 0.36, 1);
+  animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
   animation-fill-mode: forwards;
 }
 @keyframes glad-ribbon-fall {
   0% {
     transform: translate3d(0, 0, 0) rotate(var(--r0));
-    opacity: 1;
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.55;
   }
   100% {
     transform: translate3d(var(--dx), 118vh, 0) rotate(var(--r1));
-    opacity: 0.15;
+    opacity: 0;
   }
 }
 
