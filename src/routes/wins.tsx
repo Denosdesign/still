@@ -121,9 +121,9 @@ function WinsPage() {
 }
 
 function feelBar(gladness?: Gladness) {
-  if (gladness === "relieved") return "h-11 bg-harbour";
+  if (gladness === "relieved") return "h-11 bg-harbour-deep";
   if (gladness === "lighter") return "h-5 bg-harbour-soft";
-  return "h-8 bg-clay";
+  return "h-8 bg-sage";
 }
 
 function GladRecord({ misses }: { misses: Want[] }) {
@@ -182,9 +182,9 @@ function GladRecord({ misses }: { misses: Want[] }) {
             <p className="mt-2 text-[11px] text-faint">Last 14 days</p>
           </div>
           <div className="mt-3 grid grid-cols-3 gap-2">
-            <FeelMini icon={Feather} label="Lighter" n={counts.lighter} tone="text-sage" />
-            <FeelMini icon={Sun} label="Glad" n={counts.glad} tone="text-clay" />
-            <FeelMini icon={Sparkles} label="Relieved" n={counts.relieved} tone="text-harbour" />
+            <FeelMini icon={Feather} label="Lighter" n={counts.lighter} tone="text-sage/70" />
+            <FeelMini icon={Sun} label="Glad" n={counts.glad} tone="text-sage" />
+            <FeelMini icon={Sparkles} label="Relieved" n={counts.relieved} tone="text-harbour-deep" />
           </div>
         </>
       )}
