@@ -182,7 +182,7 @@ function extraNotes(wants: Want[]) {
   const tired = wants.filter((w) => w.halt?.tired).length;
   if (tired >= 2) {
     out.push(
-      `Tired shows up in ${tired} of your logged wants. Evening scrolling is a classic trap — try opening Still before the shop apps.`,
+      `Tired shows up in ${tired} of your logged wants. Evening scrolling is a classic trap. Try opening Still before the shop apps.`,
     );
   }
   const hungry = wants.filter((w) => w.halt?.hungry).length;
