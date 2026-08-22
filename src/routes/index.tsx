@@ -213,7 +213,7 @@ function Home() {
             to="/start"
             className="rounded-[var(--radius-lg)] bg-harbour-soft/70 px-4 py-3 text-sm text-harbour"
           >
-            Add your numbers — the hours get honest.
+            Add your numbers. The hours get honest.
           </Link>
         )}
       </div>
