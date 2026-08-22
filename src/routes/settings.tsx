@@ -165,7 +165,7 @@ function SettingsPage() {
           <li>When a want hits, open Still before the shop.</li>
           <li>Name the thing and the price. Ride the ninety-second wave. Then hold it, let it go, or buy with a clear head.</li>
           <li>If you hold, review it only when the timer is done. What was true at pause is the evidence.</li>
-          <li>If you already walked away, tap Glad I didn’t. Name it, what you didn’t spend, and how it felt — while the relief is warm.</li>
+          <li>If you already walked away, tap Glad I didn’t. Name it, what you didn’t spend, and how it felt, while the relief is warm.</li>
         </ol>
         <Link to="/insights" className="mt-4 inline-block text-sm text-harbour">
           Read the science behind each step
