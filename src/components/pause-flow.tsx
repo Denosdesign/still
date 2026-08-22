@@ -44,7 +44,7 @@ import {
   type WantStatus,
 } from "@/lib/types";
 import { TagPicker } from "@/components/tag-picker";
-import { CalendarRemind, InstallHome } from "@/components/hold-loop";
+import { CalendarRemind } from "@/components/hold-loop";
 
 type Step = "capture" | "halt" | "surf" | "see" | "gratitude" | "decide" | "done";
 
@@ -66,7 +66,6 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   const wants = useStillStore((s) => s.wants);
   const logWant = useStillStore((s) => s.logWant);
   const resetDraft = useStillStore((s) => s.resetDraft);
-  const updateProfile = useStillStore((s) => s.updateProfile);
   const draft = useStillStore((s) => s.draft);
   const setDraft = useStillStore((s) => s.setDraft);
 
@@ -86,7 +85,6 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
     price: 0,
     id: "",
     waitUntil: 0,
-    firstHold: false,
   });
 
   const price = Number.parseFloat(draft.priceHkd.replace(/,/g, "")) || 0;
@@ -110,10 +108,6 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
     setStep(next);
   }
 
-  function startSample() {
-    setDraft(sampleDraft(code));
-  }
-
   function back() {
     const i = STEPS.indexOf(step as (typeof STEPS)[number]);
     if (step === "done") {
@@ -132,10 +126,6 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   }
 
   function commit(status: WantStatus, hours = waitHours) {
-    const firstHold =
-      !sample &&
-      status === "waiting" &&
-      !wants.some((w) => !w.sample && (w.status === "waiting" || w.waitHours > 0));
     let savedId = "";
     let savedUntil = 0;
     if (!sample) {
@@ -158,7 +148,6 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
       price,
       id: savedId,
       waitUntil: savedUntil,
-      firstHold,
     });
     setOutcome(status);
     setPraise(
@@ -219,7 +208,6 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
       {step === "capture" && (
         <CaptureStep
           sample={sample}
-          onSample={startSample}
           onNext={() => go("halt")}
         />
       )}
@@ -228,7 +216,6 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
           halt={halt}
           setHalt={setHalt}
           onNext={() => go("surf")}
-          onSkip={() => go("surf")}
         />
       )}
       {step === "surf" && (
@@ -286,15 +273,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
           kept={kept}
           goalName={profile.goalName}
           practice={sample}
-          showInstall={
-            committed.firstHold &&
-            outcome === "waiting" &&
-            !sample &&
-            !profile.installPromptSeen
-          }
-          onDismissInstall={() => updateProfile({ installPromptSeen: true })}
           onHome={goHome}
-          onWaitlist={() => navigate({ to: "/waitlist" })}
           onTryReal={() => {
             if (profile.rateSet) navigate({ to: "/pause", search: {} });
             else navigate({ to: "/start" });
@@ -372,11 +351,9 @@ function stepTitle(step: Step, name: string) {
 
 function CaptureStep({
   sample,
-  onSample,
   onNext,
 }: {
   sample: boolean;
-  onSample: () => void;
   onNext: () => void;
 }) {
   const draft = useStillStore((s) => s.draft);
@@ -396,7 +373,7 @@ function CaptureStep({
     <WizardFrame
       footer={
         <Button size="lg" className="w-full" disabled={!can} onClick={onNext}>
-          Hold this want
+          Continue
         </Button>
       }
     >
@@ -451,11 +428,6 @@ function CaptureStep({
         recent={recentSources.map(displaySource).filter(Boolean)}
         placeholder="Search or type a tag"
       />
-      {sample && !draft.name && (
-        <Button variant="secondary" onClick={onSample} className="w-full">
-          Fill in a typical Hong Kong want
-        </Button>
-      )}
       </div>
     </WizardFrame>
   );
@@ -490,12 +462,10 @@ function HaltStep({
   halt,
   setHalt,
   onNext,
-  onSkip,
 }: {
   halt: HaltState;
   setHalt: (h: HaltState) => void;
   onNext: () => void;
-  onSkip: () => void;
 }) {
   const items = [
     { key: "hungry" as const, icon: Coffee },
@@ -508,14 +478,9 @@ function HaltStep({
   return (
     <WizardFrame
       footer={
-        <div className="flex flex-col gap-1">
-          <Button size="lg" className="w-full" onClick={onNext}>
-            Continue
-          </Button>
-          <Button variant="quiet" className="w-full" onClick={onSkip}>
-            I feel fine — skip
-          </Button>
-        </div>
+        <Button size="lg" className="w-full" onClick={onNext}>
+          Continue
+        </Button>
       }
     >
       <p className="text-sm text-muted">
@@ -583,7 +548,7 @@ function SeeStep({
     <WizardFrame
       footer={
         <Button size="lg" className="w-full" onClick={onNext}>
-          One more pause
+          Continue
         </Button>
       }
     >
@@ -710,7 +675,7 @@ function GratitudeStep({
       footer={
         <div className="flex flex-col gap-1">
           <Button size="lg" className="w-full" onClick={onNext}>
-            I have enough, for now
+            Continue
           </Button>
           <Button variant="quiet" className="w-full" onClick={onSkip}>
             Skip gratitude
@@ -820,10 +785,7 @@ function DoneStep({
   kept,
   goalName,
   practice = false,
-  showInstall = false,
-  onDismissInstall,
   onHome,
-  onWaitlist,
   onTryReal,
 }: {
   outcome: WantStatus;
@@ -836,10 +798,7 @@ function DoneStep({
   kept: number;
   goalName: string;
   practice?: boolean;
-  showInstall?: boolean;
-  onDismissInstall: () => void;
   onHome: () => void;
-  onWaitlist: () => void;
   onTryReal: () => void;
 }) {
   const title = practice
@@ -914,14 +873,10 @@ function DoneStep({
             ) : null}
             <Button
               size="lg"
-              variant={wantId ? "secondary" : "primary"}
+              variant={wantId && waitUntil ? "quiet" : "primary"}
               className="w-full"
-              onClick={onWaitlist}
+              onClick={onHome}
             >
-              See the waitlist
-            </Button>
-            {showInstall ? <InstallHome onDismiss={onDismissInstall} /> : null}
-            <Button variant="quiet" className="w-full" onClick={onHome}>
               Back to my day
             </Button>
           </>
