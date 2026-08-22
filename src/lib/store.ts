@@ -222,6 +222,8 @@ export const useStillStore = create<StillState>()(
             installPromptSeen: Boolean(
               (p.profile ?? current.profile)?.installPromptSeen,
             ),
+            installSnoozeUntil:
+              Number((p.profile ?? current.profile)?.installSnoozeUntil) || 0,
           },
           customCategories: p.customCategories ?? [],
           customSources: p.customSources ?? [],
