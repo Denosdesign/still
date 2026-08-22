@@ -52,7 +52,10 @@ function Home() {
   const hasHeld = wants.some(
     (w) => !w.sample && (w.status === "waiting" || w.waitHours > 0),
   );
-  const showInstall = hasHeld && !profile.installPromptSeen;
+  const showInstall =
+    hasHeld &&
+    !profile.installPromptSeen &&
+    Date.now() >= (profile.installSnoozeUntil || 0);
 
   return (
     <Shell>
@@ -137,7 +140,14 @@ function Home() {
         )}
 
         {showInstall ? (
-          <InstallHome onDismiss={() => updateProfile({ installPromptSeen: true })} />
+          <InstallHome
+            onLater={() =>
+              updateProfile({
+                installSnoozeUntil: Date.now() + 24 * 60 * 60 * 1000,
+              })
+            }
+            onInstalled={() => updateProfile({ installPromptSeen: true })}
+          />
         ) : null}
 
         {holdingEmpty && (
