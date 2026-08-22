@@ -104,7 +104,7 @@ function DidntBuyPage() {
             {saved ? "Logged" : "A near miss"}
           </p>
           <p className="truncate font-display text-lg text-ink">
-            {saved ? "Glad you didn’t" : "I didn’t buy something"}
+            {saved ? "Glad you didn’t" : "Glad I didn’t"}
           </p>
         </div>
       </header>
