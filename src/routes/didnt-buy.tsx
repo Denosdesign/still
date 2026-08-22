@@ -1,13 +1,39 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Feather, Sparkles, Sun } from "lucide-react";
 import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { toHkd, useMoney } from "@/lib/currency";
-import { EMPTY_HALT, GLADNESS, type Gladness } from "@/lib/types";
+import { EMPTY_HALT, type Gladness } from "@/lib/types";
 import { useStillStore } from "@/lib/store";
+
+const FEEL: {
+  id: Gladness;
+  label: string;
+  icon: typeof Feather;
+  on: string;
+}[] = [
+  {
+    id: "lighter",
+    label: "Lighter",
+    icon: Feather,
+    on: "border border-harbour/40 bg-harbour-soft text-harbour",
+  },
+  {
+    id: "glad",
+    label: "Glad",
+    icon: Sun,
+    on: "border border-harbour bg-harbour/20 text-harbour shadow-[var(--shadow-card)]",
+  },
+  {
+    id: "relieved",
+    label: "Relieved",
+    icon: Sparkles,
+    on: "border border-harbour bg-harbour text-harbour-fg shadow-[var(--shadow-card)]",
+  },
+];
 
 export const Route = createFileRoute("/didnt-buy")({
   component: DidntBuyPage,
@@ -42,8 +68,14 @@ function DidntBuyPage() {
       gladness: gladness || undefined,
     });
     setSaved(true);
+    const vibe =
+      gladness === "relieved"
+        ? [18, 40, 18, 40, 28]
+        : gladness === "glad"
+          ? [12, 32, 16]
+          : [8];
     if (typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate(12);
+      navigator.vibrate(vibe);
     }
   }
 
@@ -79,10 +111,34 @@ function DidntBuyPage() {
 
       {saved ? (
         <div className="stagger-in flex min-h-0 flex-1 flex-col items-center pt-8 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-harbour text-harbour-fg">
-            <Check className="size-7" strokeWidth={2.2} />
+          <div
+            className={cn(
+              "flex items-center justify-center rounded-full text-harbour-fg",
+              gladness === "relieved" ? "size-20 bg-harbour glad-icon-spark" : "size-16 bg-harbour",
+              gladness === "lighter" && "glad-icon-float",
+              gladness === "glad" && "glad-cell",
+            )}
+            data-on={gladness || undefined}
+          >
+            {gladness === "lighter" ? (
+              <Feather className="size-7" strokeWidth={1.8} />
+            ) : gladness === "relieved" ? (
+              <Sparkles className="size-8" strokeWidth={1.8} />
+            ) : gladness === "glad" ? (
+              <Sun className="size-7" strokeWidth={1.8} />
+            ) : (
+              <Check className="size-7" strokeWidth={2.2} />
+            )}
           </div>
-          <h1 className="mt-6 font-display text-4xl text-ink">Kept.</h1>
+          <h1 className="mt-6 font-display text-4xl text-ink">
+            {gladness === "lighter"
+              ? "Lighter."
+              : gladness === "glad"
+                ? "Glad."
+                : gladness === "relieved"
+                  ? "Relieved."
+                  : "Kept."}
+          </h1>
           <p className="mt-3 max-w-[20rem] text-muted">{praise}</p>
           <div className="mt-auto w-full pt-8" style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}>
             <Button size="lg" className="w-full" onClick={() => navigate({ to: "/" })}>
@@ -122,23 +178,34 @@ function DidntBuyPage() {
               </div>
             </label>
             <div className="mt-6">
-              <p className="mb-2 text-sm font-medium text-muted">How does not buying feel?</p>
-              <div className="flex flex-wrap gap-2">
-                {GLADNESS.map((g) => (
-                  <button
-                    key={g.id}
-                    type="button"
-                    onClick={() => setGladness(gladness === g.id ? "" : g.id)}
-                    className={cn(
-                      "h-9 rounded-full border px-3 text-sm",
-                      gladness === g.id
-                        ? "border-harbour bg-harbour-soft text-harbour"
-                        : "border-border bg-card text-muted",
-                    )}
-                  >
-                    {g.label}
-                  </button>
-                ))}
+              <p className="mb-3 text-sm font-medium text-muted">How does not buying feel?</p>
+              <div className="grid grid-cols-3 gap-2">
+                {FEEL.map((g) => {
+                  const on = gladness === g.id;
+                  const Icon = g.icon;
+                  return (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() => setGladness(g.id)}
+                      data-on={on ? g.id : undefined}
+                      className={cn(
+                        "glad-cell flex flex-col items-center gap-2 rounded-[var(--radius-xl)] px-2 py-5 transition-[transform,background-color,color,box-shadow] duration-[var(--motion-quick)]",
+                        on ? g.on : "border border-border bg-card text-muted",
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          "size-6",
+                          on && g.id === "lighter" && "glad-icon-float",
+                          on && g.id === "relieved" && "glad-icon-spark",
+                        )}
+                        strokeWidth={1.8}
+                      />
+                      <span className="font-display text-base leading-tight">{g.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
