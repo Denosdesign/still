@@ -56,6 +56,7 @@ export type Want = {
   waitHours: number;
   note: string;
   sample?: boolean;
+  hideUntilReview?: boolean;
 };
 
 export type CheckIn = {
