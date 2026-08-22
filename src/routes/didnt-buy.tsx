@@ -106,7 +106,6 @@ function DidntBuyPage() {
 
   function pickFeel(id: Gladness) {
     setGladness(id);
-    shower(id);
   }
 
   function save() {
