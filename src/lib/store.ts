@@ -60,6 +60,7 @@ type StillState = {
   }) => Want;
   decide: (id: string, status: Extract<WantStatus, "kept" | "bought">, extraWaitHours?: number) => void;
   extendWait: (id: string, extraHours: number) => void;
+  setHideUntilReview: (id: string, hide: boolean) => void;
   walkAway: () => void;
   checkIn: (wantLevel: CheckIn["wantLevel"], gratitude: string) => void;
   resetAll: () => void;
@@ -128,6 +129,7 @@ export const useStillStore = create<StillState>()(
           waitHours,
           note: input.note ?? "",
           sample: input.sample,
+          hideUntilReview: false,
         };
         set({ wants: [want, ...get().wants] });
         return want;
@@ -160,6 +162,13 @@ export const useStillStore = create<StillState>()(
               decidedAt: null,
             };
           }),
+        });
+      },
+      setHideUntilReview: (id, hide) => {
+        set({
+          wants: get().wants.map((w) =>
+            w.id === id ? { ...w, hideUntilReview: hide } : w,
+          ),
         });
       },
       walkAway: () => {
@@ -208,9 +217,9 @@ export const useStillStore = create<StillState>()(
         return {
           ...current,
           ...p,
-          wants: (Array.isArray(p.wants) ? p.wants : current.wants).filter(
-            (w) => w && !w.sample,
-          ),
+          wants: (Array.isArray(p.wants) ? p.wants : current.wants)
+            .filter((w) => w && !w.sample)
+            .map((w) => ({ ...w, hideUntilReview: Boolean(w.hideUntilReview) })),
           profile: {
             ...DEFAULT_PROFILE,
             ...(p.profile ?? current.profile),
