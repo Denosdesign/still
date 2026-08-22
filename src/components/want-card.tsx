@@ -31,7 +31,7 @@ export function WantCard({
         <div className="min-w-0">
           <p className="truncate font-display text-lg leading-tight text-ink">{want.name}</p>
           <p className="mt-1 text-xs text-muted">
-            {[category, want.sample ? "sample" : ""].filter(Boolean).join(" \u00b7 ")}
+            {[category, want.sample ? "sample" : ""].filter(Boolean).join(" · ")}
           </p>
         </div>
         <p className="shrink-0 font-display text-lg tabular text-harbour">
@@ -45,7 +45,9 @@ export function WantCard({
         ) : (
           <span className="tabular">{formatCountdown(remaining)} left</span>
         )}
-        <span className="text-faint">\u00b7 logged {formatRelative(want.createdAt, now)} ago</span>
+        <span className="text-faint">
+          {"\u00b7"} logged {formatRelative(want.createdAt, now)} ago
+        </span>
       </div>
     </Link>
   );
