@@ -126,7 +126,15 @@ function Mini({ k, v }: { k: string; v: string }) {
 function RecentRow({ want }: { want: Want }) {
   const { format } = useMoney();
   const label =
-    want.status === "kept"
+    want.nearMiss
+      ? want.gladness === "lighter"
+        ? "Lighter"
+        : want.gladness === "relieved"
+          ? "Relieved"
+          : want.gladness === "glad"
+            ? "Glad"
+            : "Glad I didn’t"
+      : want.status === "kept"
       ? "Kept"
       : want.status === "walked"
         ? "Walked away"
