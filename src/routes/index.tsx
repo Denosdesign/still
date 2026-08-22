@@ -5,6 +5,7 @@ import { ArrowRight, Pause, Sparkles } from "lucide-react";
 import { Shell } from "@/components/shell";
 import { Welcome } from "@/components/welcome";
 import { WantCard } from "@/components/want-card";
+import { InstallHome } from "@/components/hold-loop";
 import { greeting } from "@/lib/format";
 import { useMoney } from "@/lib/currency";
 import { loudestPattern } from "@/lib/science";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/")({ component: Home });
 function Home() {
   const profile = useStillStore((s) => s.profile);
   const wants = useStillStore((s) => s.wants);
+  const updateProfile = useStillStore((s) => s.updateProfile);
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -47,6 +49,10 @@ function Home() {
   const showJoy = profile.setupDone;
   const showNumbers = showKept || showJoy;
   const holdingEmpty = waiting.length === 0 && ready.length === 0;
+  const hasHeld = wants.some(
+    (w) => !w.sample && (w.status === "waiting" || w.waitHours > 0),
+  );
+  const showInstall = hasHeld && !profile.installPromptSeen;
 
   return (
     <Shell>
@@ -116,9 +122,11 @@ function Home() {
           <section>
             <div className="mb-2 flex items-baseline justify-between">
               <p className="font-display text-lg">Holding</p>
-              <Link to="/waitlist" className="text-sm text-harbour">
-                See all
-              </Link>
+              {waiting.length > 2 ? (
+                <Link to="/waitlist" className="text-sm text-harbour">
+                  See all
+                </Link>
+              ) : null}
             </div>
             <div className="space-y-2">
               {waiting.slice(0, 2).map((w) => (
@@ -127,6 +135,10 @@ function Home() {
             </div>
           </section>
         )}
+
+        {showInstall ? (
+          <InstallHome onDismiss={() => updateProfile({ installPromptSeen: true })} />
+        ) : null}
 
         {holdingEmpty && (
           <section className="rounded-[var(--radius-xl)] border border-dashed border-border px-4 py-6 text-center">
@@ -161,7 +173,7 @@ function Home() {
             to="/start"
             className="rounded-[var(--radius-lg)] bg-harbour-soft/70 px-4 py-3 text-sm text-harbour"
           >
-            Add your numbers \u2014 the hours get honest.
+            Add your numbers — the hours get honest.
           </Link>
         )}
       </div>
