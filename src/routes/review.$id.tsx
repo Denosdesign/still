@@ -4,9 +4,14 @@ import { ArrowLeft } from "lucide-react";
 import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { CalendarRemind } from "@/components/hold-loop";
-import { formatClockGb, hoursOfWork } from "@/lib/format";
+import {
+  formatClockGb,
+  formatCountdown,
+  formatWhenGb,
+  hoursOfWork,
+} from "@/lib/format";
 import { useMoney } from "@/lib/currency";
-import { KEEP_PRAISE, haltSentence, pick, waitLabel } from "@/lib/science";
+import { KEEP_PRAISE, haltSentence, pick } from "@/lib/science";
 import { useStillStore } from "@/lib/store";
 import { displaySource } from "@/lib/types";
 
@@ -40,6 +45,7 @@ function ReviewPage() {
   const halt = haltSentence(want.halt);
   const src = displaySource(want.source);
   const clock = formatClockGb(want.createdAt);
+  const remaining = (want.waitUntil ?? 0) - Date.now();
 
   function keep() {
     decide(want!.id, "kept");
@@ -87,19 +93,40 @@ function ReviewPage() {
         </p>
       )}
 
-      {want.status === "waiting" ? (
-        <div className="mt-8 flex flex-1 flex-col gap-3">
-          <p className="font-display text-xl">
-            {ready ? "Has the itch faded?" : `Cooling for ${waitLabel(want.waitHours)}.`}
+      {want.status === "waiting" && !ready ? (
+        <div className="mt-8 flex flex-1 flex-col">
+          <p className="text-sm text-muted">Come back</p>
+          <p className="font-display text-3xl tabular text-harbour">
+            {want.waitUntil ? formatWhenGb(want.waitUntil) : "when the wait ends"}
           </p>
-          {!ready && want.waitUntil ? (
-            <CalendarRemind
-              id={want.id}
-              name={want.name}
-              at={want.waitUntil}
-              variant="secondary"
-            />
-          ) : null}
+          <p className="mt-2 text-sm text-muted">
+            {want.waitUntil ? `${formatCountdown(remaining)} left. ` : ""}
+            The wait is still running. Nothing to decide yet.
+          </p>
+          <div className="mt-auto flex flex-col gap-2 pt-8">
+            {want.waitUntil ? (
+              <CalendarRemind
+                id={want.id}
+                name={want.name}
+                at={want.waitUntil}
+                variant="secondary"
+                label="Add a calendar reminder"
+              />
+            ) : null}
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() => navigate({ to: "/waitlist" })}
+            >
+              Keep holding
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {want.status === "waiting" && ready ? (
+        <div className="mt-8 flex flex-1 flex-col gap-3">
+          <p className="font-display text-xl">Has the itch faded?</p>
           <div className="mt-auto flex flex-col gap-2 pt-6">
             <Button size="lg" className="w-full" onClick={keep}>
               It faded — keep the money
@@ -116,7 +143,9 @@ function ReviewPage() {
             </button>
           </div>
         </div>
-      ) : (
+      ) : null}
+
+      {want.status !== "waiting" ? (
         <div className="mt-8 rounded-[var(--radius-xl)] border border-border bg-card p-5">
           <p className="font-display text-2xl">
             {want.status === "kept"
@@ -130,7 +159,7 @@ function ReviewPage() {
             <Link to="/wins">See the wins</Link>
           </Button>
         </div>
-      )}
+      ) : null}
     </Shell>
   );
 }
