@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Share } from "lucide-react";
 import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +8,7 @@ import { getCurrency, isPreset, normaliseCurrency } from "@/lib/currency";
 import { downloadBackup, readBackupFile, restoreBackup } from "@/lib/backup";
 import { useStillStore } from "@/lib/store";
 import { InstallSteps, installExplainer } from "@/components/hold-loop";
-import { canWebShare, installPlatform, shareApp, useStandalone } from "@/lib/install";
+import { installPlatform, useStandalone } from "@/lib/install";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
@@ -37,7 +36,6 @@ function SettingsPage() {
   const standalone = useStandalone();
   const platform = installPlatform();
   const install = installExplainer(platform);
-  const [afterShare, setAfterShare] = useState(false);
 
   function addCustom(raw: string) {
     const next = normaliseCurrency(raw);
@@ -180,25 +178,7 @@ function SettingsPage() {
           <p className="text-sm font-medium">{install.title}</p>
           <p className="mt-1 text-sm text-harbour-fg/75">{install.why}</p>
           <p className="mt-2 text-sm text-harbour-fg/80">{install.how}</p>
-          {platform === "ios" && canWebShare() ? (
-            <>
-              <Button
-                size="lg"
-                className="mt-4 w-full bg-card text-ink hover:bg-card/90"
-                onClick={() => {
-                  void shareApp().then(() => setAfterShare(true));
-                }}
-              >
-                <Share className="size-4" strokeWidth={1.8} />
-                Add to Home Screen
-              </Button>
-              {afterShare ? (
-                <p className="mt-3 text-sm text-harbour-fg/80">{install.after}</p>
-              ) : null}
-            </>
-          ) : (
-            <InstallSteps platform={platform} />
-          )}
+          <InstallSteps platform={platform} />
         </section>
       )}
 
