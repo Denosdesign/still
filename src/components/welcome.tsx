@@ -6,22 +6,38 @@ import { cn } from "@/lib/utils";
 
 const SLIDES = [
   {
+    id: "pause",
+    kind: "copy" as const,
+    title: "A pause between wanting something and paying for it.",
+    body: "",
+  },
+  {
+    id: "how",
+    kind: "copy" as const,
+    title: "",
+    body: "You name the itch, wait a cooling-off, then decide. If you already walked away, you can log the skip while the relief is warm. No shame if you buy after the wait. Pausing is the win.",
+  },
+  {
     id: "name",
+    kind: "ui" as const,
     title: "Name the want",
     body: "Open Still before the shop. Write what it is and what it costs.",
   },
   {
     id: "wait",
+    kind: "ui" as const,
     title: "Hold it while it cools",
     body: "A waiting period. The listing will still be there tomorrow.",
   },
   {
     id: "wave",
+    kind: "ui" as const,
     title: "Ride the wave",
     body: "The itch rises, peaks, and falls. You do not have to buy at the top.",
   },
   {
     id: "keep",
+    kind: "ui" as const,
     title: "Keep the money, or buy on purpose",
     body: "If it fades, you kept it. If you still want it after the wait, that is a considered buy.",
   },
@@ -38,14 +54,6 @@ export function Welcome() {
           A quieter spend
         </p>
         <h1 className="mt-6 font-display text-5xl leading-[0.9] tracking-tight">Still</h1>
-        <p className="mt-6 max-w-[20rem] text-lg leading-relaxed text-harbour-fg/85">
-          A pause between wanting something and paying for it.
-        </p>
-        <p className="mt-4 max-w-[22rem] text-sm leading-relaxed text-harbour-fg/70">
-          You name the itch, wait a cooling-off, then decide. If you already walked away,
-          you can log the skip while the relief is warm. No shame if you buy after the wait.
-          Pausing is the win.
-        </p>
 
         <WelcomeSlides />
       </div>
@@ -89,22 +97,41 @@ function WelcomeSlides() {
       onPointerEnter={() => setPause(true)}
       onPointerLeave={() => setPause(false)}
     >
-      <div className="flex justify-center">
-        <Phone key={slide.id}>
-          {slide.id === "name" ? <UiName /> : null}
-          {slide.id === "wait" ? <UiWait /> : null}
-          {slide.id === "wave" ? <UiWave /> : null}
-          {slide.id === "keep" ? <UiKeep /> : null}
-        </Phone>
+      <div className="flex min-h-[18.5rem] flex-col">
+        {slide.kind === "copy" ? (
+          <div key={slide.id} className="welcome-slide flex min-h-[18.5rem] flex-col justify-center">
+            {slide.title ? (
+              <p className="max-w-[20rem] font-display text-2xl leading-snug text-harbour-fg">
+                {slide.title}
+              </p>
+            ) : null}
+            {slide.body ? (
+              <p className="max-w-[22rem] text-base leading-relaxed text-harbour-fg/75">
+                {slide.body}
+              </p>
+            ) : null}
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-center">
+              <Phone key={slide.id}>
+                {slide.id === "name" ? <UiName /> : null}
+                {slide.id === "wait" ? <UiWait /> : null}
+                {slide.id === "wave" ? <UiWave /> : null}
+                {slide.id === "keep" ? <UiKeep /> : null}
+              </Phone>
+            </div>
+            <p className="mt-3 font-display text-lg text-harbour-fg">{slide.title}</p>
+            <p className="mt-1 text-sm leading-relaxed text-harbour-fg/70">{slide.body}</p>
+          </>
+        )}
       </div>
-      <p className="mt-3 font-display text-lg text-harbour-fg">{slide.title}</p>
-      <p className="mt-1 text-sm leading-relaxed text-harbour-fg/70">{slide.body}</p>
-      <div className="mt-3 flex justify-center gap-2">
+      <div className="mt-4 flex justify-center gap-2">
         {SLIDES.map((s, n) => (
           <button
             key={s.id}
             type="button"
-            aria-label={s.title}
+            aria-label={s.title || s.body.slice(0, 40)}
             onClick={() => setI(n)}
             className={cn(
               "h-1.5 rounded-full transition-[width,background-color] duration-[var(--motion-fast)]",
