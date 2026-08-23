@@ -30,7 +30,7 @@ export function HydrateStill({ children }: { children: ReactNode }) {
   }, []);
 
   if (!ready) {
-    return <ScreenWait label="Loading your pauses\u2026" />;
+    return <ScreenWait label="Loading your pauses" />;
   }
 
   return children;
