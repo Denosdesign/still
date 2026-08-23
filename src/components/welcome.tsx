@@ -1,8 +1,7 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Clock, Feather, Sparkles, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 const SLIDES = [
   {
@@ -60,7 +59,7 @@ export function Welcome() {
       <div className="pointer-events-none fixed inset-0 z-0 bg-harbour" />
       <div
         className="stagger-in relative z-10 mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col overflow-y-auto px-6 pt-[max(3rem,env(safe-area-inset-top))]"
-        style={{ paddingBottom: "calc(8.5rem + env(safe-area-inset-bottom))" }}
+        style={{ paddingBottom: "calc(11.5rem + env(safe-area-inset-bottom))" }}
       >
         <p className="text-xs font-medium uppercase tracking-[0.22em] text-harbour-fg/60">
           A quieter spend
@@ -92,6 +91,7 @@ export function Welcome() {
 function WelcomeSlides() {
   const [i, setI] = useState(0);
   const [pause, setPause] = useState(false);
+  const origin = useRef<number | null>(null);
 
   useEffect(() => {
     if (pause) return;
@@ -106,15 +106,28 @@ function WelcomeSlides() {
 
   const slide = SLIDES[i];
 
+  function onDown(e: PointerEvent) {
+    origin.current = e.clientX;
+  }
+  function onUp(e: PointerEvent) {
+    if (origin.current == null) return;
+    const dx = e.clientX - origin.current;
+    origin.current = null;
+    if (dx < -40) setI((n) => (n + 1) % SLIDES.length);
+    if (dx > 40) setI((n) => (n - 1 + SLIDES.length) % SLIDES.length);
+  }
+
   return (
     <div
-      className="mt-10"
+      className="mt-10 touch-pan-y"
       onPointerEnter={() => setPause(true)}
       onPointerLeave={() => setPause(false)}
+      onPointerDown={onDown}
+      onPointerUp={onUp}
     >
-      <div className="flex min-h-[18.5rem] flex-col">
+      <div className="flex h-[21rem] flex-col overflow-hidden">
         {slide.kind === "how" ? (
-          <div key="how" className="welcome-slide flex min-h-[18.5rem] flex-col justify-center">
+          <div key="how" className="welcome-slide flex h-full flex-col justify-center">
             <p className="font-display text-3xl leading-tight tracking-tight">
               Pausing is the win.
             </p>
@@ -123,9 +136,9 @@ function WelcomeSlides() {
             </p>
           </div>
         ) : (
-          <>
+          <div key={slide.id} className="welcome-slide flex h-full flex-col">
             <div className="flex justify-center">
-              <Phone key={slide.id}>
+              <Phone>
                 {slide.id === "name" ? <UiName /> : null}
                 {slide.id === "wait" ? <UiWait /> : null}
                 {slide.id === "wave" ? <UiWave /> : null}
@@ -134,22 +147,8 @@ function WelcomeSlides() {
             </div>
             <p className="mt-3 font-display text-lg text-harbour-fg">{slide.title}</p>
             <p className="mt-1 text-sm leading-relaxed text-harbour-fg/70">{slide.body}</p>
-          </>
+          </div>
         )}
-      </div>
-      <div className="mt-4 flex justify-center gap-2">
-        {SLIDES.map((s, n) => (
-          <button
-            key={s.id}
-            type="button"
-            aria-label={s.title}
-            onClick={() => setI(n)}
-            className={cn(
-              "h-1.5 rounded-full transition-[width,background-color] duration-[var(--motion-fast)]",
-              n === i ? "w-6 bg-harbour-fg" : "w-1.5 bg-harbour-fg/35",
-            )}
-          />
-        ))}
       </div>
     </div>
   );
