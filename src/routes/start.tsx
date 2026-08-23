@@ -16,6 +16,7 @@ import {
   getCurrency,
   isPreset,
   normaliseCurrency,
+  sanitiseMoneyInput,
 } from "@/lib/currency";
 import { CurrencySelect } from "@/components/currency-select";
 import { useStillStore } from "@/lib/store";
@@ -334,7 +335,7 @@ function PayStep({
             inputMode="decimal"
             placeholder=""
             value={raw}
-            onChange={(e) => onRaw(e.target.value.replace(/[^0-9.]/g, ""))}
+            onChange={(e) => onRaw(sanitiseMoneyInput(e.target.value, money.fraction))}
             className={cn("h-16 font-display text-3xl tabular tracking-tight", pad)}
           />
         </div>
@@ -383,6 +384,7 @@ function PayStep({
               hint={joyHintText}
               prefix={prefix}
               format={(n) => formatMoney(n, currency)}
+              fraction={money.fraction}
               onChange={onJoy}
             />
           ) : (
@@ -393,7 +395,10 @@ function PayStep({
               <Input
                 inputMode="decimal"
                 value={joy ? String(joy) : ""}
-                onChange={(e) => onJoy(Number(e.target.value.replace(/[^0-9.]/g, "")) || 0)}
+                onChange={(e) => {
+                  const next = sanitiseMoneyInput(e.target.value, money.fraction);
+                  onJoy(Number.parseFloat(next) || 0);
+                }}
                 className={cn("h-14 font-display text-2xl tabular", pad)}
               />
             </div>
@@ -500,6 +505,7 @@ function MoneySlider({
   hint,
   prefix,
   format,
+  fraction = 0,
   onChange,
 }: {
   value: number;
@@ -510,6 +516,7 @@ function MoneySlider({
   hint?: string;
   prefix: string;
   format: (n: number) => string;
+  fraction?: 0 | 2;
   onChange: (n: number) => void;
 }) {
   const [editing, setEditing] = useState(false);
@@ -543,7 +550,7 @@ function MoneySlider({
             autoFocus
             inputMode="decimal"
             value={draft}
-            onChange={(e) => setDraft(e.target.value.replace(/[^0-9.]/g, ""))}
+            onChange={(e) => setDraft(sanitiseMoneyInput(e.target.value, fraction))}
             onBlur={commit}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
