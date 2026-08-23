@@ -309,17 +309,6 @@ function NearMissLog({
           <Button
             size="lg"
             className="mt-6 w-full"
-            disabled={!can}
-            onClick={() => {
-              if (!why) return;
-              onBoughtLater(want.id, why, why === "other" ? note : undefined);
-            }}
-          >
-            Log it
-          </Button>
-          <button
-            type="button"
-            className="mt-1 w-full py-2 text-sm text-muted"
             onClick={() => {
               setOpen(false);
               setWhy("");
@@ -327,6 +316,17 @@ function NearMissLog({
             }}
           >
             Not now
+          </Button>
+          <button
+            type="button"
+            disabled={!can}
+            className="mt-1 w-full py-3 text-sm text-muted disabled:opacity-40"
+            onClick={() => {
+              if (!why) return;
+              onBoughtLater(want.id, why, why === "other" ? note : undefined);
+            }}
+          >
+            Log it
           </button>
         </div>
       ) : (
