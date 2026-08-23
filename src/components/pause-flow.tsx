@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { UrgeSurf } from "@/components/urge-surf";
 import { cn } from "@/lib/utils";
 import { formatWhenGb, hoursOfWork } from "@/lib/format";
-import { fromHkd, toHkd, useMoney } from "@/lib/currency";
+import { fromHkd, sanitiseMoneyInput, toHkd, useMoney } from "@/lib/currency";
 import {
   BUY_AFTER_WAIT_PRAISE,
   GRATITUDE_PROMPTS,
@@ -392,7 +392,7 @@ function CaptureStep({
   const recentSources = useStillStore((s) => s.recentSources);
   const price = Number.parseFloat(draft.priceHkd.replace(/,/g, "")) || 0;
   const can = draft.name.trim().length > 1 && price > 0;
-  const { symbol } = useMoney();
+  const { symbol, currency } = useMoney();
   const prefix = symbol.trim();
   const pad = prefix.length > 2 ? "pl-16" : "pl-12";
 
@@ -425,7 +425,7 @@ function CaptureStep({
             placeholder=""
             value={draft.priceHkd}
             onChange={(e) =>
-              setDraft({ priceHkd: e.target.value.replace(/[^0-9.]/g, "") })
+              setDraft({ priceHkd: sanitiseMoneyInput(e.target.value, currency.fraction) })
             }
             className={cn("h-16 font-display text-3xl tabular tracking-tight", pad)}
           />
