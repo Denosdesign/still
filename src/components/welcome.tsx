@@ -100,7 +100,7 @@ function WelcomeSlides() {
     }
     const t = window.setInterval(() => {
       setI((n) => (n + 1) % SLIDES.length);
-    }, 4500);
+    }, 3000);
     return () => window.clearInterval(t);
   }, [pause]);
 
