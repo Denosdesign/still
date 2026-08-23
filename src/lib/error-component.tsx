@@ -30,7 +30,7 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error, reset]);
 
   if (hold) {
-    return <ScreenWait label="One moment…" />;
+    return <ScreenWait label="One moment" />;
   }
 
   return (
