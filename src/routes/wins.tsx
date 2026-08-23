@@ -128,7 +128,9 @@ function feelBar(gladness?: Gladness) {
 
 function GladRecord({ misses }: { misses: Want[] }) {
   const { format } = useMoney();
-  const money = misses.reduce((sum, w) => sum + w.priceHkd, 0);
+  const stayed = misses
+    .filter((w) => w.status === "kept")
+    .reduce((sum, w) => sum + w.priceHkd, 0);
   const counts = {
     lighter: misses.filter((w) => w.gladness === "lighter").length,
     glad: misses.filter((w) => w.gladness === "glad" || !w.gladness).length,
@@ -156,7 +158,7 @@ function GladRecord({ misses }: { misses: Want[] }) {
             <div className="flex items-baseline justify-between gap-3">
               <p className="font-display text-3xl tabular text-ink">{misses.length}</p>
               <p className="text-sm text-muted">
-                {format(money)} stayed
+                {format(stayed)} stayed
               </p>
             </div>
             <div className="mt-4 flex h-14 items-end gap-1">
@@ -240,7 +242,9 @@ function Mini({ k, v }: { k: string; v: string }) {
 function RecentRow({ want }: { want: Want }) {
   const { format } = useMoney();
   const label =
-    want.nearMiss
+    want.boughtLater
+      ? "Bought later"
+      : want.nearMiss
       ? want.gladness === "lighter"
         ? "Lighter"
         : want.gladness === "relieved"
@@ -256,14 +260,20 @@ function RecentRow({ want }: { want: Want }) {
           ? "Bought, considered"
           : "Holding";
   return (
-    <li className="flex items-center justify-between gap-3 rounded-[var(--radius-lg)] border border-border bg-card px-4 py-3">
-      <div className="min-w-0">
-        <p className="truncate text-sm font-medium">{want.name}</p>
-        <p className="text-xs text-muted">
-          {label} · {formatDateGb(want.createdAt)}
-        </p>
-      </div>
-      <p className="tabular text-sm text-harbour">{format(want.priceHkd)}</p>
+    <li>
+      <Link
+        to="/review/$id"
+        params={{ id: want.id }}
+        className="flex items-center justify-between gap-3 rounded-[var(--radius-lg)] border border-border bg-card px-4 py-3 transition-transform active:scale-[0.98]"
+      >
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium">{want.name}</p>
+          <p className="text-xs text-muted">
+            {label} · {formatDateGb(want.createdAt)}
+          </p>
+        </div>
+        <p className="tabular text-sm text-harbour">{format(want.priceHkd)}</p>
+      </Link>
     </li>
   );
 }
