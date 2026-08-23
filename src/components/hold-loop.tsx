@@ -94,7 +94,7 @@ export function InstallHome({
 export function installExplainer() {
   return {
     title: "Put Still on the Home Screen",
-    why: "An icon opens Still in one tap, before the shop does. Faster than finding a tab, and the pause stays in the way of checkout.",
+    why: "So Still opens faster, and feels smoother to use.",
   };
 }
 
