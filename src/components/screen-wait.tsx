@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export function ScreenWait({
-  label = "One moment…",
+  label = "One moment",
 }: {
   label?: string;
 }) {
