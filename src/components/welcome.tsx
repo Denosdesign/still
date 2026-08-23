@@ -38,10 +38,28 @@ const SLIDES = [
 ] as const;
 
 export function Welcome() {
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.backgroundColor;
+    const prevBody = body.style.backgroundColor;
+    html.style.backgroundColor = "#2c4a42";
+    body.style.backgroundColor = "#2c4a42";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const prevTheme = meta?.getAttribute("content") ?? "";
+    meta?.setAttribute("content", "#2c4a42");
+    return () => {
+      html.style.backgroundColor = prevHtml;
+      body.style.backgroundColor = prevBody;
+      if (prevTheme) meta?.setAttribute("content", prevTheme);
+    };
+  }, []);
+
   return (
-    <div className="relative flex min-h-dvh flex-col bg-harbour text-harbour-fg">
+    <div className="relative flex min-h-[100dvh] flex-col bg-harbour text-harbour-fg">
+      <div className="pointer-events-none fixed inset-0 z-0 bg-harbour" />
       <div
-        className="stagger-in mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col overflow-y-auto px-6 pt-[max(3rem,env(safe-area-inset-top))]"
+        className="stagger-in relative z-10 mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col overflow-y-auto px-6 pt-[max(3rem,env(safe-area-inset-top))]"
         style={{ paddingBottom: "calc(8.5rem + env(safe-area-inset-bottom))" }}
       >
         <p className="text-xs font-medium uppercase tracking-[0.22em] text-harbour-fg/60">
