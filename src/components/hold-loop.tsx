@@ -62,7 +62,7 @@ export function InstallHome({
     else setSteps(true);
   }
 
-  const copy = installExplainer(platform);
+  const copy = installExplainer();
   const showNative = native && platform !== "ios";
   const showSteps = platform === "ios" || platform === "desktop" || steps || (platform === "android" && !native);
 
@@ -91,22 +91,10 @@ export function InstallHome({
   );
 }
 
-export function installExplainer(platform: "ios" | "android" | "desktop") {
-  if (platform === "ios") {
-    return {
-      title: "Put Still on the Home Screen",
-      why: "The icon has to be there before the shop is. Safari will not remind you later.",
-    };
-  }
-  if (platform === "android") {
-    return {
-      title: "Put Still on the Home Screen",
-      why: "The icon has to be there before the shop is. Chrome will not keep asking.",
-    };
-  }
+export function installExplainer() {
   return {
     title: "Put Still on the Home Screen",
-    why: "A shortcut beats hunting for a tab when the itch hits.",
+    why: "An icon opens Still in one tap, before the shop does. Faster than finding a tab, and the pause stays in the way of checkout.",
   };
 }
 
