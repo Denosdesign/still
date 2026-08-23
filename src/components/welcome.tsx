@@ -6,16 +6,10 @@ import { cn } from "@/lib/utils";
 
 const SLIDES = [
   {
-    id: "pause",
-    kind: "copy" as const,
-    title: "A pause between wanting something and paying for it.",
-    body: "",
-  },
-  {
     id: "how",
-    kind: "copy" as const,
-    title: "",
-    body: "You name the itch, wait a cooling-off, then decide. If you already walked away, you can log the skip while the relief is warm. No shame if you buy after the wait. Pausing is the win.",
+    kind: "how" as const,
+    title: "How it works",
+    body: "",
   },
   {
     id: "name",
@@ -54,6 +48,9 @@ export function Welcome() {
           A quieter spend
         </p>
         <h1 className="mt-6 font-display text-5xl leading-[0.9] tracking-tight">Still</h1>
+        <p className="mt-6 max-w-[20rem] text-lg leading-relaxed text-harbour-fg/85">
+          A pause between wanting something and paying for it.
+        </p>
 
         <WelcomeSlides />
       </div>
@@ -98,18 +95,19 @@ function WelcomeSlides() {
       onPointerLeave={() => setPause(false)}
     >
       <div className="flex min-h-[18.5rem] flex-col">
-        {slide.kind === "copy" ? (
-          <div key={slide.id} className="welcome-slide flex min-h-[18.5rem] flex-col justify-center">
-            {slide.title ? (
-              <p className="max-w-[20rem] font-display text-2xl leading-snug text-harbour-fg">
-                {slide.title}
-              </p>
-            ) : null}
-            {slide.body ? (
-              <p className="max-w-[22rem] text-base leading-relaxed text-harbour-fg/75">
-                {slide.body}
-              </p>
-            ) : null}
+        {slide.kind === "how" ? (
+          <div key="how" className="welcome-slide flex min-h-[18.5rem] flex-col justify-center">
+            <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-harbour-fg/50">
+              How it works
+            </p>
+            <p className="mt-3 font-display text-3xl leading-tight tracking-tight">
+              Name it. Wait. Decide.
+            </p>
+            <p className="mt-4 max-w-[22rem] text-sm leading-relaxed text-harbour-fg/70">
+              Already walked away? Log the skip while the relief is warm.
+            </p>
+            <p className="mt-6 font-display text-xl leading-snug">Pausing is the win.</p>
+            <p className="mt-1 text-sm text-harbour-fg/55">No shame if you buy after the wait.</p>
           </div>
         ) : (
           <>
