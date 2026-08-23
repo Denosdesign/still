@@ -3,17 +3,20 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { CalendarRemind } from "@/components/hold-loop";
 import {
   formatClockGb,
   formatCountdown,
+  formatDateGb,
   formatWhenGb,
   hoursOfWork,
 } from "@/lib/format";
 import { useMoney } from "@/lib/currency";
 import { KEEP_PRAISE, haltSentence, pick } from "@/lib/science";
 import { useStillStore } from "@/lib/store";
-import { displaySource } from "@/lib/types";
+import { BUY_LATER_WHYS, displaySource, type BuyLaterWhy, type Want } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/review/$id")({
   component: ReviewPage,
@@ -27,6 +30,7 @@ function ReviewPage() {
   const decide = useStillStore((s) => s.decide);
   const extendWait = useStillStore((s) => s.extendWait);
   const setHideUntilReview = useStillStore((s) => s.setHideUntilReview);
+  const markBoughtLater = useStillStore((s) => s.markBoughtLater);
   const praise = useMemo(() => pick(KEEP_PRAISE, id.length), [id]);
   const { format } = useMoney();
   const [hideConfirm, setHideConfirm] = useState(false);
@@ -64,7 +68,7 @@ function ReviewPage() {
     <Shell hideNav>
       <button
         type="button"
-        onClick={() => navigate({ to: "/waitlist" })}
+        onClick={() => navigate({ to: want.status === "waiting" ? "/waitlist" : "/wins" })}
         className="mb-4 flex size-11 items-center justify-center rounded-[var(--radius-md)] hover:bg-harbour-soft/60"
         aria-label="Back"
       >
@@ -72,13 +76,25 @@ function ReviewPage() {
       </button>
 
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-        {want.status === "waiting" ? (ready ? "Time’s up" : "Still holding") : want.status}
+        {want.nearMiss
+          ? want.boughtLater
+            ? "Bought later"
+            : "Glad I didn’t"
+          : want.status === "waiting"
+            ? ready
+              ? "Time’s up"
+              : "Still holding"
+            : want.status}
       </p>
       <h1 className="mt-2 font-display text-3xl">{want.name}</h1>
       <p className="mt-2 font-display text-3xl tabular text-harbour">
         {format(want.priceHkd)}
       </p>
 
+      {want.nearMiss ? (
+        <NearMissLog want={want} onBoughtLater={markBoughtLater} />
+      ) : (
+        <>
       <section className="mt-6 rounded-[var(--radius-xl)] bg-harbour-soft/80 px-4 py-4">
         <p className="text-[11px] uppercase tracking-[0.12em] text-harbour/70">
           When you paused
@@ -210,6 +226,118 @@ function ReviewPage() {
           </Button>
         </div>
       ) : null}
+        </>
+      )}
     </Shell>
+  );
+}
+
+function gladWord(want: Want) {
+  if (want.gladness === "lighter") return "Lighter";
+  if (want.gladness === "relieved") return "Relieved";
+  if (want.gladness === "glad") return "Glad";
+  return "Glad I didn’t";
+}
+
+function whyLabel(why?: BuyLaterWhy) {
+  return BUY_LATER_WHYS.find((w) => w.id === why)?.label ?? "";
+}
+
+function NearMissLog({
+  want,
+  onBoughtLater,
+}: {
+  want: Want;
+  onBoughtLater: (id: string, why: BuyLaterWhy, note?: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [why, setWhy] = useState<BuyLaterWhy | "">("");
+  const [note, setNote] = useState("");
+  const can = Boolean(why) && (why !== "other" || note.trim().length > 0);
+
+  return (
+    <div className="mt-6 flex min-h-0 flex-1 flex-col">
+      <section className="rounded-[var(--radius-xl)] bg-harbour-soft/80 px-4 py-4">
+        <p className="text-[11px] uppercase tracking-[0.12em] text-harbour/70">
+          When you logged it
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-harbour">
+          {gladWord(want)}. {formatDateGb(want.createdAt)}.
+        </p>
+      </section>
+
+      {want.boughtLater ? (
+        <div className="mt-6 rounded-[var(--radius-xl)] border border-border bg-card p-5">
+          <p className="font-display text-2xl">Bought later.</p>
+          <p className="mt-2 text-sm text-muted">
+            The skip was real.
+            {want.boughtLaterWhy
+              ? ` Then: ${whyLabel(want.boughtLaterWhy)}${want.boughtLaterNote ? `. ${want.boughtLaterNote}` : "."}`
+              : ""}
+          </p>
+        </div>
+      ) : open ? (
+        <div className="mt-8">
+          <p className="text-sm leading-relaxed text-muted">
+            It was true then. This only records that you bought it later.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {BUY_LATER_WHYS.map((w) => (
+              <button
+                key={w.id}
+                type="button"
+                onClick={() => setWhy(w.id)}
+                className={cn(
+                  "h-9 rounded-full border px-3 text-sm",
+                  why === w.id
+                    ? "border-harbour bg-harbour-soft text-harbour"
+                    : "border-border bg-card text-muted",
+                )}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
+          {why === "other" ? (
+            <Input
+              className="mt-3"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="In a few words"
+            />
+          ) : null}
+          <Button
+            size="lg"
+            className="mt-6 w-full"
+            disabled={!can}
+            onClick={() => {
+              if (!why) return;
+              onBoughtLater(want.id, why, why === "other" ? note : undefined);
+            }}
+          >
+            Log it
+          </Button>
+          <button
+            type="button"
+            className="mt-1 w-full py-2 text-sm text-muted"
+            onClick={() => {
+              setOpen(false);
+              setWhy("");
+              setNote("");
+            }}
+          >
+            Not now
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="mt-auto w-full py-3 text-sm text-muted"
+          onClick={() => setOpen(true)}
+        >
+          I bought it later
+        </button>
+      )}
+    </div>
   );
 }
