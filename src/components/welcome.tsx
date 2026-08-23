@@ -129,7 +129,7 @@ function WelcomeSlides() {
           <button
             key={s.id}
             type="button"
-            aria-label={s.title || s.body.slice(0, 40)}
+            aria-label={s.title}
             onClick={() => setI(n)}
             className={cn(
               "h-1.5 rounded-full transition-[width,background-color] duration-[var(--motion-fast)]",
