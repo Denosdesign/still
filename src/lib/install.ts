@@ -56,30 +56,6 @@ export async function promptNativeInstall() {
   return choice.outcome === "accepted";
 }
 
-export function appShareUrl() {
-  if (typeof window === "undefined") return "";
-  const base = import.meta.env.BASE_URL || "/";
-  return new URL(base, window.location.origin).href;
-}
-
-export function canWebShare() {
-  return typeof navigator !== "undefined" && typeof navigator.share === "function";
-}
-
-export async function shareApp() {
-  if (!canWebShare()) return false;
-  try {
-    await navigator.share({
-      title: "Still",
-      text: "Pause the want. Keep the money.",
-      url: appShareUrl(),
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export function useStandalone() {
   const [on, setOn] = useState(false);
   useEffect(() => {
