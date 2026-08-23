@@ -47,8 +47,8 @@ export function Welcome() {
         <p className="text-xs font-medium uppercase tracking-[0.22em] text-harbour-fg/60">
           A quieter spend
         </p>
-        <h1 className="mt-6 font-display text-6xl leading-[0.9] tracking-tight">Still</h1>
-        <p className="mt-6 max-w-[16rem] text-lg leading-relaxed text-harbour-fg/80">
+        <h1 className="mt-3 font-display text-6xl leading-[0.9] tracking-tight">Still</h1>
+        <p className="mt-3 max-w-[16rem] text-sm leading-relaxed text-harbour-fg/75">
           A pause between wanting something and paying for it.
         </p>
 
