@@ -338,7 +338,7 @@ function NearMissLog({
             className="mt-1 w-full py-2 text-sm text-muted"
             onClick={close}
           >
-            Not now
+            Cancel
           </button>
         </div>
       ) : (
