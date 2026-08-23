@@ -29,8 +29,11 @@ const SLIDES = [
 
 export function Welcome() {
   return (
-    <div className="flex min-h-dvh flex-col bg-harbour px-6 pb-10 pt-[max(3rem,env(safe-area-inset-top))] text-harbour-fg">
-      <div className="stagger-in mx-auto flex w-full max-w-md flex-1 flex-col">
+    <div className="relative flex min-h-dvh flex-col bg-harbour text-harbour-fg">
+      <div
+        className="stagger-in mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col overflow-y-auto px-6 pt-[max(3rem,env(safe-area-inset-top))]"
+        style={{ paddingBottom: "calc(8.5rem + env(safe-area-inset-bottom))" }}
+      >
         <p className="text-xs font-medium uppercase tracking-[0.22em] text-harbour-fg/60">
           A quieter spend
         </p>
@@ -45,26 +48,29 @@ export function Welcome() {
         </p>
 
         <WelcomeSlides />
+      </div>
 
-        <div className="mt-auto flex flex-col gap-3 pt-6">
-          <Button
-            asChild
-            size="xl"
-            className="w-full bg-card text-ink hover:bg-card/90"
-          >
-            <Link to="/start">Start</Link>
-          </Button>
-          <Button
-            asChild
-            size="lg"
-            variant="ghost"
-            className="w-full border border-harbour-fg/40 text-harbour-fg hover:bg-harbour-fg/10 hover:text-harbour-fg"
-          >
-            <Link to="/pause" search={{ sample: true }}>
-              Show me how it works
-            </Link>
-          </Button>
-        </div>
+      <div
+        className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-harbour-fg/15 bg-harbour/92 px-6 pt-3 backdrop-blur-md"
+        style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
+      >
+        <Button
+          asChild
+          size="xl"
+          className="w-full bg-card text-ink hover:bg-card/90"
+        >
+          <Link to="/start">Start</Link>
+        </Button>
+        <Button
+          asChild
+          size="lg"
+          variant="ghost"
+          className="mt-2 w-full border border-harbour-fg/40 text-harbour-fg hover:bg-harbour-fg/10 hover:text-harbour-fg"
+        >
+          <Link to="/pause" search={{ sample: true }}>
+            Show me how it works
+          </Link>
+        </Button>
       </div>
     </div>
   );
