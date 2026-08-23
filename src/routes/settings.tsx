@@ -4,7 +4,7 @@ import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CurrencySelect } from "@/components/currency-select";
-import { getCurrency, isPreset, normaliseCurrency } from "@/lib/currency";
+import { getCurrency, isPreset, normaliseCurrency, sanitiseMoneyInput } from "@/lib/currency";
 import { downloadBackup, readBackupFile, restoreBackup } from "@/lib/backup";
 import { useStillStore } from "@/lib/store";
 import { InstallSteps, installExplainer } from "@/components/hold-loop";
@@ -133,14 +133,14 @@ function SettingsPage() {
           <Input
             inputMode="decimal"
             value={hourlyRate}
-            onChange={(e) => setHourlyRate(e.target.value.replace(/[^0-9.]/g, ""))}
+            onChange={(e) => setHourlyRate(sanitiseMoneyInput(e.target.value, money.fraction))}
           />
         </Field>
         <Field label={`Monthly joy money (${money.symbol.trim() || money.code})`}>
           <Input
             inputMode="decimal"
             value={fun}
-            onChange={(e) => setFun(e.target.value.replace(/[^0-9.]/g, ""))}
+            onChange={(e) => setFun(sanitiseMoneyInput(e.target.value, money.fraction))}
           />
           <p className="mt-1 text-xs text-muted">
             Planned pleasure is not the enemy. Impulse is. Leave yourself a budget that is allowed.
