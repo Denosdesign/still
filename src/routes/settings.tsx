@@ -8,7 +8,7 @@ import { CurrencySelect } from "@/components/currency-select";
 import { getCurrency, isPreset, normaliseCurrency } from "@/lib/currency";
 import { downloadBackup, readBackupFile, restoreBackup } from "@/lib/backup";
 import { useStillStore } from "@/lib/store";
-import { InstallSteps } from "@/components/hold-loop";
+import { InstallSteps, installExplainer } from "@/components/hold-loop";
 import { canWebShare, installPlatform, shareApp, useStandalone } from "@/lib/install";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
@@ -36,6 +36,7 @@ function SettingsPage() {
   const money = getCurrency(currency);
   const standalone = useStandalone();
   const platform = installPlatform();
+  const install = installExplainer(platform);
   const [afterShare, setAfterShare] = useState(false);
 
   function addCustom(raw: string) {
@@ -176,11 +177,9 @@ function SettingsPage() {
 
       {!standalone && (
         <section className="mt-10 rounded-[var(--radius-lg)] bg-harbour px-4 py-5 text-harbour-fg">
-          <p className="text-sm font-medium">Open this before checkout</p>
-          <p className="mt-1 text-sm text-harbour-fg/75">
-            A Home Screen icon beats opening the shop first. Browsers cannot nag you later,
-            so this is the reminder that works.
-          </p>
+          <p className="text-sm font-medium">{install.title}</p>
+          <p className="mt-1 text-sm text-harbour-fg/75">{install.why}</p>
+          <p className="mt-2 text-sm text-harbour-fg/80">{install.how}</p>
           {platform === "ios" && canWebShare() ? (
             <>
               <Button
@@ -191,12 +190,10 @@ function SettingsPage() {
                 }}
               >
                 <Share className="size-4" strokeWidth={1.8} />
-                Share
+                Add to Home Screen
               </Button>
               {afterShare ? (
-                <p className="mt-3 text-sm text-harbour-fg/80">
-                  Then tap Add to Home Screen in the list.
-                </p>
+                <p className="mt-3 text-sm text-harbour-fg/80">{install.after}</p>
               ) : null}
             </>
           ) : (
