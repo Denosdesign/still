@@ -253,7 +253,15 @@ function NearMissLog({
   const [open, setOpen] = useState(false);
   const [why, setWhy] = useState<BuyLaterWhy | "">("");
   const [note, setNote] = useState("");
+  const [sure, setSure] = useState(false);
   const can = Boolean(why) && (why !== "other" || note.trim().length > 0);
+
+  function close() {
+    setOpen(false);
+    setWhy("");
+    setNote("");
+    setSure(false);
+  }
 
   return (
     <div className="mt-6 flex min-h-0 flex-1 flex-col">
@@ -306,28 +314,48 @@ function NearMissLog({
               placeholder="In a few words"
             />
           ) : null}
-          <Button
-            size="lg"
-            className="mt-6 w-full"
-            disabled={!can}
-            onClick={() => {
-              if (!why) return;
-              onBoughtLater(want.id, why, why === "other" ? note : undefined);
-            }}
-          >
-            Log it
-          </Button>
-          <button
-            type="button"
-            className="mt-1 w-full py-2 text-sm text-muted"
-            onClick={() => {
-              setOpen(false);
-              setWhy("");
-              setNote("");
-            }}
-          >
-            Not now
-          </button>
+          {sure ? (
+            <>
+              <p className="mt-6 text-sm leading-relaxed text-muted">
+                This takes the money out of Kept.
+              </p>
+              <Button
+                size="lg"
+                className="mt-3 w-full"
+                onClick={() => {
+                  if (!why) return;
+                  onBoughtLater(want.id, why, why === "other" ? note : undefined);
+                }}
+              >
+                Yes, I bought it
+              </Button>
+              <button
+                type="button"
+                className="mt-1 w-full py-2 text-sm text-muted"
+                onClick={close}
+              >
+                Not now
+              </button>
+            </>
+          ) : (
+            <>
+              <Button
+                size="lg"
+                className="mt-6 w-full"
+                disabled={!can}
+                onClick={() => setSure(true)}
+              >
+                Log it
+              </Button>
+              <button
+                type="button"
+                className="mt-1 w-full py-2 text-sm text-muted"
+                onClick={close}
+              >
+                Not now
+              </button>
+            </>
+          )}
         </div>
       ) : (
         <button
