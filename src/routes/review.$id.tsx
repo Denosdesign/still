@@ -331,7 +331,7 @@ function NearMissLog({
               onBoughtLater(want.id, why, why === "other" ? note : undefined);
             }}
           >
-            Log it
+            {sure ? "Yes, I bought it" : "Log it"}
           </Button>
           <button
             type="button"
