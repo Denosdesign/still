@@ -35,6 +35,15 @@ export const GLADNESS = [
 
 export type Gladness = (typeof GLADNESS)[number]["id"];
 
+export const BUY_LATER_WHYS = [
+  { id: "sale", label: "On sale" },
+  { id: "payday", label: "Payday" },
+  { id: "still", label: "Still wanted it" },
+  { id: "other", label: "Something else" },
+] as const;
+
+export type BuyLaterWhy = (typeof BUY_LATER_WHYS)[number]["id"];
+
 export type HaltState = {
   hungry: boolean;
   angry: boolean;
@@ -67,6 +76,9 @@ export type Want = {
   hideUntilReview?: boolean;
   nearMiss?: boolean;
   gladness?: Gladness;
+  boughtLater?: boolean;
+  boughtLaterWhy?: BuyLaterWhy;
+  boughtLaterNote?: string;
 };
 
 export type CheckIn = {
