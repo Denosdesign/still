@@ -63,7 +63,7 @@ export function CurrencySelect({
             {code}
           </option>
         ))}
-        <option value={ADD}>Add another…</option>
+        <option value={ADD}>Add another</option>
       </select>
       {adding && (
         <div className="mt-2 flex gap-2">
