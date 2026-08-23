@@ -475,7 +475,7 @@ function HoursStep({
         {goalName === "Something of mine" && (
           <Input
             className="mt-3 h-12"
-            placeholder="A quieter flat, a camera, more rest…"
+            placeholder="A quieter flat, a camera, more rest"
             value={goalCustom}
             onChange={(e) => onGoalCustom(e.target.value)}
           />
