@@ -19,6 +19,7 @@ function SettingsPage() {
   const resetAll = useStillStore((s) => s.resetAll);
   const [saved, setSaved] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [resetTyped, setResetTyped] = useState("");
   const [backupNote, setBackupNote] = useState("");
   const [confirmImport, setConfirmImport] = useState(false);
   const pendingFile = useRef<File | null>(null);
@@ -217,19 +218,48 @@ function SettingsPage() {
       <section className="mt-6 rounded-[var(--radius-lg)] border border-border p-4">
         <p className="text-sm font-medium">Start again</p>
         <p className="mt-1 text-sm text-muted">
-          Clears pauses and check-ins from this device. Cannot be undone.
+          Clears everything on this device: wants, waits, Glad I didn’t, and your numbers.
+          Cannot be undone. Download a copy first if you need it.
         </p>
         {confirmReset ? (
-          <Button
-            variant="danger"
-            className="mt-3 w-full"
-            onClick={() => {
-              resetAll();
-              navigate({ to: "/" });
-            }}
-          >
-            Yes, clear everything
-          </Button>
+          <div className="mt-3">
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-muted">
+                Type RESET to confirm
+              </span>
+              <Input
+                autoFocus
+                autoCapitalize="characters"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck={false}
+                value={resetTyped}
+                onChange={(e) => setResetTyped(e.target.value)}
+                placeholder="RESET"
+              />
+            </label>
+            <Button
+              variant="danger"
+              className="mt-3 w-full"
+              disabled={resetTyped.trim().toUpperCase() !== "RESET"}
+              onClick={() => {
+                resetAll();
+                navigate({ to: "/" });
+              }}
+            >
+              Clear everything
+            </Button>
+            <Button
+              variant="quiet"
+              className="mt-1 w-full"
+              onClick={() => {
+                setConfirmReset(false);
+                setResetTyped("");
+              }}
+            >
+              Not now
+            </Button>
+          </div>
         ) : (
           <Button variant="ghost" className="mt-3 w-full" onClick={() => setConfirmReset(true)}>
             Reset this device
