@@ -79,13 +79,13 @@ export function InstallHome({
   }
 
   const useShare = shareReady && (platform === "ios" || !native);
+  const copy = installExplainer(platform);
 
   return (
     <section className="w-full rounded-[var(--radius-xl)] bg-harbour px-5 py-5 text-left text-harbour-fg">
-      <p className="font-display text-xl leading-tight">Open this before checkout</p>
-      <p className="mt-2 text-sm text-harbour-fg/75">
-        Put Still on your Home Screen. The pause has to arrive before the shop does.
-      </p>
+      <p className="font-display text-xl leading-tight">{copy.title}</p>
+      <p className="mt-2 text-sm text-harbour-fg/75">{copy.why}</p>
+      <p className="mt-2 text-sm text-harbour-fg/80">{copy.how}</p>
       {native && !useShare ? (
         <Button
           size="lg"
@@ -101,7 +101,7 @@ export function InstallHome({
           onClick={() => void install()}
         >
           <Share className="size-4" strokeWidth={1.8} />
-          Share
+          Add to Home Screen
         </Button>
       ) : (
         <Button
@@ -113,9 +113,7 @@ export function InstallHome({
         </Button>
       )}
       {afterShare ? (
-        <p className="mt-3 text-sm text-harbour-fg/80">
-          Then tap Add to Home Screen in the list.
-        </p>
+        <p className="mt-3 text-sm text-harbour-fg/80">{copy.after}</p>
       ) : null}
       {steps && <InstallSteps platform={platform} />}
       <button
@@ -127,6 +125,31 @@ export function InstallHome({
       </button>
     </section>
   );
+}
+
+export function installExplainer(platform: "ios" | "android" | "desktop") {
+  if (platform === "ios") {
+    return {
+      title: "Put Still on the Home Screen",
+      why: "The icon has to be there before the shop is. Safari will not remind you later.",
+      how: "On iPhone, the button opens Share. In that list tap Add to Home Screen, then Add.",
+      after: "In the share list, tap Add to Home Screen.",
+    };
+  }
+  if (platform === "android") {
+    return {
+      title: "Put Still on the Home Screen",
+      why: "The icon has to be there before the shop is. Chrome will not keep asking.",
+      how: "On Android, tap below to install. If nothing pops up, open the three-dot menu and choose Add to Home screen.",
+      after: "",
+    };
+  }
+  return {
+    title: "Put Still on the Home Screen",
+    why: "A shortcut beats hunting for a tab when the itch hits.",
+    how: "Look for the install icon in the address bar, or Install Still in the browser menu.",
+    after: "",
+  };
 }
 
 export function InstallSteps({
