@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Share } from "lucide-react";
 import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +9,7 @@ import { getCurrency, isPreset, normaliseCurrency } from "@/lib/currency";
 import { downloadBackup, readBackupFile, restoreBackup } from "@/lib/backup";
 import { useStillStore } from "@/lib/store";
 import { InstallSteps } from "@/components/hold-loop";
-import { installPlatform, useStandalone } from "@/lib/install";
+import { canWebShare, installPlatform, shareApp, useStandalone } from "@/lib/install";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
@@ -35,6 +36,7 @@ function SettingsPage() {
   const money = getCurrency(currency);
   const standalone = useStandalone();
   const platform = installPlatform();
+  const [afterShare, setAfterShare] = useState(false);
 
   function addCustom(raw: string) {
     const next = normaliseCurrency(raw);
@@ -179,7 +181,27 @@ function SettingsPage() {
             A Home Screen icon beats opening the shop first. Browsers cannot nag you later,
             so this is the reminder that works.
           </p>
-          <InstallSteps platform={platform} />
+          {platform === "ios" && canWebShare() ? (
+            <>
+              <Button
+                size="lg"
+                className="mt-4 w-full bg-card text-ink hover:bg-card/90"
+                onClick={() => {
+                  void shareApp().then(() => setAfterShare(true));
+                }}
+              >
+                <Share className="size-4" strokeWidth={1.8} />
+                Share
+              </Button>
+              {afterShare ? (
+                <p className="mt-3 text-sm text-harbour-fg/80">
+                  Then tap Add to Home Screen in the list.
+                </p>
+              ) : null}
+            </>
+          ) : (
+            <InstallSteps platform={platform} />
+          )}
         </section>
       )}
 
