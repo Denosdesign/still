@@ -177,7 +177,6 @@ function SettingsPage() {
         <section className="mt-10 rounded-[var(--radius-lg)] bg-harbour px-4 py-5 text-harbour-fg">
           <p className="text-sm font-medium">{install.title}</p>
           <p className="mt-1 text-sm text-harbour-fg/75">{install.why}</p>
-          <p className="mt-2 text-sm text-harbour-fg/80">{install.how}</p>
           <InstallSteps platform={platform} />
         </section>
       )}
