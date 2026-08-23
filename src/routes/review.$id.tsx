@@ -294,7 +294,10 @@ function NearMissLog({
               <button
                 key={w.id}
                 type="button"
-                onClick={() => setWhy(w.id)}
+                onClick={() => {
+                  setWhy(w.id);
+                  setSure(false);
+                }}
                 className={cn(
                   "h-9 rounded-full border px-3 text-sm",
                   why === w.id
@@ -314,48 +317,29 @@ function NearMissLog({
               placeholder="In a few words"
             />
           ) : null}
-          {sure ? (
-            <>
-              <p className="mt-6 text-sm leading-relaxed text-muted">
-                This takes the money out of Kept.
-              </p>
-              <Button
-                size="lg"
-                className="mt-3 w-full"
-                onClick={() => {
-                  if (!why) return;
-                  onBoughtLater(want.id, why, why === "other" ? note : undefined);
-                }}
-              >
-                Yes, I bought it
-              </Button>
-              <button
-                type="button"
-                className="mt-1 w-full py-2 text-sm text-muted"
-                onClick={close}
-              >
-                Not now
-              </button>
-            </>
-          ) : (
-            <>
-              <Button
-                size="lg"
-                className="mt-6 w-full"
-                disabled={!can}
-                onClick={() => setSure(true)}
-              >
-                Log it
-              </Button>
-              <button
-                type="button"
-                className="mt-1 w-full py-2 text-sm text-muted"
-                onClick={close}
-              >
-                Not now
-              </button>
-            </>
-          )}
+          <Button
+            size="lg"
+            variant={sure ? "danger" : "primary"}
+            className="mt-6 w-full"
+            disabled={!can}
+            onClick={() => {
+              if (!why) return;
+              if (!sure) {
+                setSure(true);
+                return;
+              }
+              onBoughtLater(want.id, why, why === "other" ? note : undefined);
+            }}
+          >
+            Log it
+          </Button>
+          <button
+            type="button"
+            className="mt-1 w-full py-2 text-sm text-muted"
+            onClick={close}
+          >
+            Not now
+          </button>
         </div>
       ) : (
         <button
