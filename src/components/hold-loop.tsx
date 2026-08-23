@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { downloadReviewEvent } from "@/lib/calendar";
 import {
   canNativeInstall,
+  canWebShare,
   installPlatform,
   promptNativeInstall,
+  shareApp,
   useStandalone,
 } from "@/lib/install";
 
@@ -48,19 +50,35 @@ export function InstallHome({
   const standalone = useStandalone();
   const [steps, setSteps] = useState(false);
   const [native, setNative] = useState(false);
+  const [shareReady, setShareReady] = useState(false);
+  const [afterShare, setAfterShare] = useState(false);
   const platform = installPlatform();
 
   useEffect(() => {
     setNative(canNativeInstall());
+    setShareReady(canWebShare());
   }, []);
 
   if (standalone) return null;
 
   async function install() {
-    const ok = await promptNativeInstall();
-    if (ok) onInstalled?.();
-    else setSteps(true);
+    if (native) {
+      const ok = await promptNativeInstall();
+      if (ok) {
+        onInstalled?.();
+        return;
+      }
+    }
+    if (shareReady) {
+      const ok = await shareApp();
+      setAfterShare(true);
+      if (!ok && platform !== "ios") setSteps(true);
+      return;
+    }
+    setSteps(true);
   }
+
+  const useShare = shareReady && (platform === "ios" || !native);
 
   return (
     <section className="w-full rounded-[var(--radius-xl)] bg-harbour px-5 py-5 text-left text-harbour-fg">
@@ -68,13 +86,22 @@ export function InstallHome({
       <p className="mt-2 text-sm text-harbour-fg/75">
         Put Still on your Home Screen. The pause has to arrive before the shop does.
       </p>
-      {native ? (
+      {native && !useShare ? (
         <Button
           size="lg"
           className="mt-4 w-full bg-card text-ink hover:bg-card/90"
           onClick={() => void install()}
         >
           Add to Home Screen
+        </Button>
+      ) : useShare ? (
+        <Button
+          size="lg"
+          className="mt-4 w-full bg-card text-ink hover:bg-card/90"
+          onClick={() => void install()}
+        >
+          <Share className="size-4" strokeWidth={1.8} />
+          Share
         </Button>
       ) : (
         <Button
@@ -85,6 +112,11 @@ export function InstallHome({
           Show me how
         </Button>
       )}
+      {afterShare ? (
+        <p className="mt-3 text-sm text-harbour-fg/80">
+          Then tap Add to Home Screen in the list.
+        </p>
+      ) : null}
       {steps && <InstallSteps platform={platform} />}
       <button
         type="button"
