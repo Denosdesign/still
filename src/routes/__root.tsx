@@ -2,7 +2,6 @@ import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-r
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { HydrateStill } from "@/components/hydrate-still";
-import { ScreenWait } from "@/components/screen-wait";
 import { RouteProgress } from "@/components/route-progress";
 import { AppErrorComponent, AppNotFound } from "@/lib/error-component";
 import appCss from "../styles.css?url";
@@ -15,7 +14,6 @@ function asset(path: string) {
 }
 
 export const Route = createRootRoute({
-  pendingComponent: () => <ScreenWait label="Loading…" />,
   errorComponent: AppErrorComponent,
   notFoundComponent: AppNotFound,
   head: () => ({
