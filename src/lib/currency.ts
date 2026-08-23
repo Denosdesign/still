@@ -80,7 +80,7 @@ const PRESETS: Record<PresetCode, CurrencyDef> = {
     code: "GBP",
     name: "Pound sterling",
     symbol: "£",
-    fraction: 0,
+    fraction: 2,
     perHkd: 0.1,
     pay: { hour: [12, 18, 28], month: [2200, 3200, 4800], year: [26000, 38000, 58000] },
     joyChips: [80, 150, 250, 400],
@@ -94,7 +94,7 @@ const PRESETS: Record<PresetCode, CurrencyDef> = {
     code: "USD",
     name: "US dollar",
     symbol: "US$",
-    fraction: 0,
+    fraction: 2,
     perHkd: 0.13,
     pay: { hour: [15, 25, 40], month: [2800, 4500, 7000], year: [34000, 54000, 84000] },
     joyChips: [100, 200, 350, 500],
@@ -108,7 +108,7 @@ const PRESETS: Record<PresetCode, CurrencyDef> = {
     code: "EUR",
     name: "Euro",
     symbol: "€",
-    fraction: 0,
+    fraction: 2,
     perHkd: 0.12,
     pay: { hour: [14, 22, 35], month: [2500, 3800, 5500], year: [30000, 45000, 66000] },
     joyChips: [80, 150, 250, 400],
@@ -135,7 +135,7 @@ export function getCurrency(code?: string): CurrencyDef {
     code: key || "CUR",
     name: key || "Custom",
     symbol: key ? `${key} ` : "",
-    fraction: 0,
+    fraction: 2,
     perHkd: 1,
     pay: { hour: [], month: [], year: [] },
     joyChips: [],
@@ -147,11 +147,22 @@ export function getCurrency(code?: string): CurrencyDef {
   };
 }
 
+export function sanitiseMoneyInput(raw: string, fraction: 0 | 2 = 0) {
+  const cleaned = raw.replace(/[^\d.]/g, "");
+  if (fraction === 0) return cleaned.replace(/\./g, "");
+  const first = cleaned.indexOf(".");
+  if (first === -1) return cleaned;
+  const head = cleaned.slice(0, first).replace(/\./g, "");
+  const tail = cleaned.slice(first + 1).replace(/\./g, "").slice(0, 2);
+  return `${head}.${tail}`;
+}
+
 export function formatMoney(amount: number, code = "HKD", withCents = false) {
   const c = getCurrency(code);
   const safe = Number.isFinite(amount) ? amount : 0;
-  const digits = withCents && c.fraction === 2 ? 2 : 0;
-  const n = digits ? safe : Math.round(safe);
+  const n = c.fraction === 2 ? Math.round(safe * 100) / 100 : Math.round(safe);
+  const showCents = c.fraction === 2 && (withCents || Math.abs(n % 1) > 1e-9);
+  const digits = showCents ? 2 : 0;
   const body = n.toLocaleString("en-GB", {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
@@ -162,10 +173,10 @@ export function formatMoney(amount: number, code = "HKD", withCents = false) {
 export function fromHkd(amountHkd: number, code = "HKD") {
   const c = getCurrency(code);
   const raw = amountHkd * (c.perHkd || 1);
-  if (!c.known) return Math.round(amountHkd);
   if (c.code === "KRW") return Math.round(raw / 1000) * 1000;
   if (c.code === "JPY") return Math.round(raw / 100) * 100;
   if (c.code === "TWD") return Math.round(raw / 50) * 50;
+  if (c.fraction === 2) return Math.round(raw * 100) / 100;
   return Math.round(raw);
 }
 
