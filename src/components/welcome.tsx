@@ -51,22 +51,12 @@ export function Welcome() {
       </div>
 
       <div
-        className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 px-6 pt-3"
-        style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
+        className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-20 w-[min(calc(100%-1.5rem),24.5rem)] -translate-x-1/2 rounded-[1.75rem] border border-border/80 bg-surface/90 px-3 py-3 shadow-[var(--shadow-card)] backdrop-blur-md"
       >
-        <Button
-          asChild
-          size="xl"
-          className="w-full bg-card text-ink hover:bg-card/90"
-        >
+        <Button asChild size="xl" className="w-full">
           <Link to="/start">Start</Link>
         </Button>
-        <Button
-          asChild
-          size="lg"
-          variant="ghost"
-          className="mt-2 w-full border border-harbour-fg/40 text-harbour-fg hover:bg-harbour-fg/10 hover:text-harbour-fg"
-        >
+        <Button asChild size="lg" variant="ghost" className="mt-2 w-full text-ink hover:bg-harbour-soft/60">
           <Link to="/pause" search={{ sample: true }}>
             Show me how it works
           </Link>
