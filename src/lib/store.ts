@@ -63,6 +63,7 @@ type StillState = {
   decide: (id: string, status: Extract<WantStatus, "kept" | "bought">, extraWaitHours?: number) => void;
   extendWait: (id: string, extraHours: number) => void;
   setHideUntilReview: (id: string, hide: boolean) => void;
+  markBoughtLater: (id: string, why: NonNullable<Want["boughtLaterWhy"]>, note?: string) => void;
   walkAway: () => void;
   checkIn: (wantLevel: CheckIn["wantLevel"], gratitude: string) => void;
   resetAll: () => void;
@@ -175,6 +176,23 @@ export const useStillStore = create<StillState>()(
           ),
         });
       },
+      markBoughtLater: (id, why, note) => {
+        set({
+          wants: get().wants.map((w) =>
+            w.id === id
+              ? {
+                  ...w,
+                  status: "bought" as const,
+                  decidedAt: Date.now(),
+                  waitUntil: Date.now(),
+                  boughtLater: true,
+                  boughtLaterWhy: why,
+                  boughtLaterNote: note?.trim() || "",
+                }
+              : w,
+          ),
+        });
+      },
       walkAway: () => {
         set({ walkAways: [Date.now(), ...get().walkAways].slice(0, 200) });
       },
@@ -227,6 +245,7 @@ export const useStillStore = create<StillState>()(
               ...w,
               hideUntilReview: Boolean(w.hideUntilReview),
               nearMiss: Boolean(w.nearMiss),
+              boughtLater: Boolean(w.boughtLater),
             })),
           profile: {
             ...DEFAULT_PROFILE,
