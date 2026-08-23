@@ -35,7 +35,7 @@ function SettingsPage() {
   const money = getCurrency(currency);
   const standalone = useStandalone();
   const platform = installPlatform();
-  const install = installExplainer(platform);
+  const install = installExplainer();
 
   function addCustom(raw: string) {
     const next = normaliseCurrency(raw);
