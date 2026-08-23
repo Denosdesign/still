@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Share, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { downloadReviewEvent } from "@/lib/calendar";
@@ -103,54 +103,49 @@ export function InstallSteps({
 }: {
   platform: "ios" | "android" | "desktop";
 }) {
+  const ios = platform === "ios";
+  const android = platform === "android";
   return (
     <ol className="mt-4 list-none space-y-3 pl-0 text-sm text-harbour-fg/90">
-      {platform === "ios" ? (
+      {ios ? (
         <>
-          <li className="flex gap-3">
-            <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10">
-              <Share className="size-3.5" strokeWidth={1.8} />
-            </span>
-            <span>Tap Share in Safari, the square with the arrow.</span>
-          </li>
-          <li className="flex gap-3">
-            <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10">
-              <Smartphone className="size-3.5" strokeWidth={1.8} />
-            </span>
-            <span>Choose Add to Home Screen, then Add.</span>
-          </li>
+          <Step icon={<Share className="size-3.5" strokeWidth={1.8} />}>
+            Tap Share in Safari, the square with the arrow.
+          </Step>
+          <Step icon={<Smartphone className="size-3.5" strokeWidth={1.8} />}>
+            Choose Add to Home Screen, then Add.
+          </Step>
         </>
-      ) : platform === "android" ? (
+      ) : android ? (
         <>
-          <li className="flex gap-3">
-            <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10 text-xs font-medium">
-              1
-            </span>
-            <span>Open the browser menu (three dots).</span>
-          </li>
-          <li className="flex gap-3">
-            <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10 text-xs font-medium">
-              2
-            </span>
-            <span>Tap Add to Home screen, or Install app.</span>
-          </li>
+          <Step n={1}>Open the browser menu (three dots).</Step>
+          <Step n={2}>Tap Add to Home screen, or Install app.</Step>
         </>
       ) : (
         <>
-          <li className="flex gap-3">
-            <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10 text-xs font-medium">
-              1
-            </span>
-            <span>Look for the install icon in the address bar.</span>
-          </li>
-          <li className="flex gap-3">
-            <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10 text-xs font-medium">
-              2
-            </span>
-            <span>Or open the browser menu and choose Install Still.</span>
-          </li>
+          <Step n={1}>Look for the install icon in the address bar.</Step>
+          <Step n={2}>Or open the browser menu and choose Install Still.</Step>
         </>
       )}
     </ol>
+  );
+}
+
+function Step({
+  n,
+  icon,
+  children,
+}: {
+  n?: number;
+  icon?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-harbour-fg/10 text-xs font-medium leading-none">
+        {icon ?? n}
+      </span>
+      <span className="min-w-0 leading-7">{children}</span>
+    </li>
   );
 }
