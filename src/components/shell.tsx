@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Layers, Pause, Settings2, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,19 @@ export function Shell({
   hideNav?: boolean;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const resolvedPath = useRouterState({
+    select: (s) => s.resolvedLocation?.pathname ?? s.location.pathname,
+  });
+  const waiting =
+    useRouterState({
+      select: (s) => s.isLoading || s.location.href !== s.resolvedLocation?.href,
+    });
   const rateSet = useStillStore((s) => s.profile.rateSet);
+  const [shown, setShown] = useState(children);
+
+  useEffect(() => {
+    if (!waiting) setShown(children);
+  }, [waiting, children]);
 
   return (
     <div className="min-h-dvh bg-bg">
@@ -31,8 +43,8 @@ export function Shell({
             hideNav ? "overflow-hidden pb-0" : "pb-32",
           )}
         >
-          <div key={pathname} className="page-enter flex min-h-0 flex-1 flex-col">
-            {children}
+          <div key={resolvedPath} className="page-enter flex min-h-0 flex-1 flex-col">
+            {waiting ? shown : children}
           </div>
         </main>
         {!hideNav && (
