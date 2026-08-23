@@ -5,7 +5,7 @@ import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { toHkd, useMoney } from "@/lib/currency";
+import { sanitiseMoneyInput, useMoney } from "@/lib/currency";
 import { EMPTY_HALT, type Gladness } from "@/lib/types";
 import { useStillStore } from "@/lib/store";
 
@@ -81,7 +81,7 @@ export const Route = createFileRoute("/didnt-buy")({
 function DidntBuyPage() {
   const navigate = useNavigate();
   const logWant = useStillStore((s) => s.logWant);
-  const { code, symbol } = useMoney();
+  const { code, symbol, currency } = useMoney();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [gladness, setGladness] = useState<Gladness | "">("");
@@ -113,7 +113,7 @@ function DidntBuyPage() {
     const local = Number.parseFloat(price.replace(/,/g, "")) || 0;
     logWant({
       name: name.trim(),
-      priceHkd: toHkd(local, code),
+      priceHkd: local,
       category: "",
       source: "",
       halt: EMPTY_HALT,
@@ -251,7 +251,7 @@ function DidntBuyPage() {
                 <Input
                   inputMode="decimal"
                   value={price}
-                  onChange={(e) => setPrice(e.target.value.replace(/[^0-9.]/g, ""))}
+                  onChange={(e) => setPrice(sanitiseMoneyInput(e.target.value, currency.fraction))}
                   className={cn("h-16 font-display text-3xl tabular tracking-tight", pad)}
                 />
               </div>
