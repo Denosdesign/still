@@ -308,7 +308,6 @@ function NearMissLog({
           ) : null}
           <Button
             size="lg"
-            variant="secondary"
             className="mt-6 w-full"
             disabled={!can}
             onClick={() => {
@@ -318,9 +317,9 @@ function NearMissLog({
           >
             Log it
           </Button>
-          <Button
-            size="lg"
-            className="mt-2 w-full"
+          <button
+            type="button"
+            className="mt-1 w-full py-2 text-sm text-muted"
             onClick={() => {
               setOpen(false);
               setWhy("");
@@ -328,7 +327,7 @@ function NearMissLog({
             }}
           >
             Not now
-          </Button>
+          </button>
         </div>
       ) : (
         <button
