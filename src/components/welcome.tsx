@@ -37,11 +37,11 @@ export function Welcome() {
         <p className="text-xs font-medium uppercase tracking-[0.22em] text-harbour-fg/60">
           A quieter spend
         </p>
-        <h1 className="mt-4 font-display text-5xl leading-[0.9] tracking-tight">Still</h1>
-        <p className="mt-4 text-base leading-relaxed text-harbour-fg/85">
+        <h1 className="mt-6 font-display text-5xl leading-[0.9] tracking-tight">Still</h1>
+        <p className="mt-6 max-w-[20rem] text-lg leading-relaxed text-harbour-fg/85">
           A pause between wanting something and paying for it.
         </p>
-        <p className="mt-2 text-sm leading-relaxed text-harbour-fg/70">
+        <p className="mt-4 max-w-[22rem] text-sm leading-relaxed text-harbour-fg/70">
           You name the itch, wait a cooling-off, then decide. If you already walked away,
           you can log the skip while the relief is warm. No shame if you buy after the wait.
           Pausing is the win.
@@ -51,7 +51,7 @@ export function Welcome() {
       </div>
 
       <div
-        className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-harbour-fg/15 bg-harbour/92 px-6 pt-3 backdrop-blur-md"
+        className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 px-6 pt-3"
         style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
       >
         <Button
@@ -95,7 +95,7 @@ function WelcomeSlides() {
 
   return (
     <div
-      className="mt-6"
+      className="mt-10"
       onPointerEnter={() => setPause(true)}
       onPointerLeave={() => setPause(false)}
     >
