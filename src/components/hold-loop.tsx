@@ -4,10 +4,8 @@ import { Button } from "@/components/ui/button";
 import { downloadReviewEvent } from "@/lib/calendar";
 import {
   canNativeInstall,
-  canWebShare,
   installPlatform,
   promptNativeInstall,
-  shareApp,
   useStandalone,
 } from "@/lib/install";
 
@@ -50,43 +48,30 @@ export function InstallHome({
   const standalone = useStandalone();
   const [steps, setSteps] = useState(false);
   const [native, setNative] = useState(false);
-  const [shareReady, setShareReady] = useState(false);
-  const [afterShare, setAfterShare] = useState(false);
   const platform = installPlatform();
 
   useEffect(() => {
     setNative(canNativeInstall());
-    setShareReady(canWebShare());
   }, []);
 
   if (standalone) return null;
 
   async function install() {
-    if (native) {
-      const ok = await promptNativeInstall();
-      if (ok) {
-        onInstalled?.();
-        return;
-      }
-    }
-    if (shareReady) {
-      const ok = await shareApp();
-      setAfterShare(true);
-      if (!ok && platform !== "ios") setSteps(true);
-      return;
-    }
-    setSteps(true);
+    const ok = await promptNativeInstall();
+    if (ok) onInstalled?.();
+    else setSteps(true);
   }
 
-  const useShare = shareReady && (platform === "ios" || !native);
   const copy = installExplainer(platform);
+  const showNative = native && platform !== "ios";
+  const showSteps = platform === "ios" || platform === "desktop" || steps || (platform === "android" && !native);
 
   return (
     <section className="w-full rounded-[var(--radius-xl)] bg-harbour px-5 py-5 text-left text-harbour-fg">
       <p className="font-display text-xl leading-tight">{copy.title}</p>
       <p className="mt-2 text-sm text-harbour-fg/75">{copy.why}</p>
       <p className="mt-2 text-sm text-harbour-fg/80">{copy.how}</p>
-      {native && !useShare ? (
+      {showNative ? (
         <Button
           size="lg"
           className="mt-4 w-full bg-card text-ink hover:bg-card/90"
@@ -94,28 +79,8 @@ export function InstallHome({
         >
           Add to Home Screen
         </Button>
-      ) : useShare ? (
-        <Button
-          size="lg"
-          className="mt-4 w-full bg-card text-ink hover:bg-card/90"
-          onClick={() => void install()}
-        >
-          <Share className="size-4" strokeWidth={1.8} />
-          Add to Home Screen
-        </Button>
-      ) : (
-        <Button
-          size="lg"
-          className="mt-4 w-full bg-card text-ink hover:bg-card/90"
-          onClick={() => setSteps(true)}
-        >
-          Show me how
-        </Button>
-      )}
-      {afterShare ? (
-        <p className="mt-3 text-sm text-harbour-fg/80">{copy.after}</p>
       ) : null}
-      {steps && <InstallSteps platform={platform} />}
+      {showSteps && <InstallSteps platform={platform} />}
       <button
         type="button"
         className="mt-3 w-full py-2 text-sm text-harbour-fg/70"
@@ -132,23 +97,20 @@ export function installExplainer(platform: "ios" | "android" | "desktop") {
     return {
       title: "Put Still on the Home Screen",
       why: "The icon has to be there before the shop is. Safari will not remind you later.",
-      how: "On iPhone, the button opens Share. In that list tap Add to Home Screen, then Add.",
-      after: "In the share list, tap Add to Home Screen.",
+      how: "On iPhone, tap Share in Safari, the square with the arrow at the bottom. Then Add to Home Screen.",
     };
   }
   if (platform === "android") {
     return {
       title: "Put Still on the Home Screen",
       why: "The icon has to be there before the shop is. Chrome will not keep asking.",
-      how: "On Android, tap below to install. If nothing pops up, open the three-dot menu and choose Add to Home screen.",
-      after: "",
+      how: "On Android, tap Add to Home Screen if it appears. Otherwise open the three-dot menu and choose Add to Home screen.",
     };
   }
   return {
     title: "Put Still on the Home Screen",
     why: "A shortcut beats hunting for a tab when the itch hits.",
     how: "Look for the install icon in the address bar, or Install Still in the browser menu.",
-    after: "",
   };
 }
 
