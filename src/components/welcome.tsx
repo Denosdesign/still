@@ -8,7 +8,7 @@ const SLIDES = [
   {
     id: "how",
     kind: "how" as const,
-    title: "How it works",
+    title: "Pausing is the win.",
     body: "",
   },
   {
@@ -115,17 +115,12 @@ function WelcomeSlides() {
       <div className="flex min-h-[18.5rem] flex-col">
         {slide.kind === "how" ? (
           <div key="how" className="welcome-slide flex min-h-[18.5rem] flex-col justify-center">
-            <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-harbour-fg/50">
-              How it works
+            <p className="font-display text-3xl leading-tight tracking-tight">
+              Pausing is the win.
             </p>
-            <p className="mt-3 font-display text-3xl leading-tight tracking-tight">
-              Name it. Wait. Decide.
+            <p className="mt-4 max-w-[20rem] text-base leading-relaxed text-harbour-fg/70">
+              No shame if you buy after the wait.
             </p>
-            <p className="mt-4 max-w-[22rem] text-sm leading-relaxed text-harbour-fg/70">
-              Already walked away? Log the skip while the relief is warm.
-            </p>
-            <p className="mt-6 font-display text-xl leading-snug">Pausing is the win.</p>
-            <p className="mt-1 text-sm text-harbour-fg/55">No shame if you buy after the wait.</p>
           </div>
         ) : (
           <>
