@@ -70,7 +70,6 @@ export function InstallHome({
     <section className="w-full rounded-[var(--radius-xl)] bg-harbour px-5 py-5 text-left text-harbour-fg">
       <p className="font-display text-xl leading-tight">{copy.title}</p>
       <p className="mt-2 text-sm text-harbour-fg/75">{copy.why}</p>
-      <p className="mt-2 text-sm text-harbour-fg/80">{copy.how}</p>
       {showNative ? (
         <Button
           size="lg"
@@ -97,20 +96,17 @@ export function installExplainer(platform: "ios" | "android" | "desktop") {
     return {
       title: "Put Still on the Home Screen",
       why: "The icon has to be there before the shop is. Safari will not remind you later.",
-      how: "On iPhone, tap Share in Safari, the square with the arrow at the bottom. Then Add to Home Screen.",
     };
   }
   if (platform === "android") {
     return {
       title: "Put Still on the Home Screen",
       why: "The icon has to be there before the shop is. Chrome will not keep asking.",
-      how: "On Android, tap Add to Home Screen if it appears. Otherwise open the three-dot menu and choose Add to Home screen.",
     };
   }
   return {
     title: "Put Still on the Home Screen",
     why: "A shortcut beats hunting for a tab when the itch hits.",
-    how: "Look for the install icon in the address bar, or Install Still in the browser menu.",
   };
 }
 
@@ -120,7 +116,7 @@ export function InstallSteps({
   platform: "ios" | "android" | "desktop";
 }) {
   return (
-    <ol className="mt-4 space-y-3 text-sm text-harbour-fg/90">
+    <ol className="mt-4 list-none space-y-3 pl-0 text-sm text-harbour-fg/90">
       {platform === "ios" ? (
         <>
           <li className="flex gap-3">
