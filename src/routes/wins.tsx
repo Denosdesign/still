@@ -1,10 +1,13 @@
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, Feather, Heart, PauseCircle, Sparkles, Sun } from "lucide-react";
+import { Award, ChevronLeft, ChevronRight, Feather, Heart, PauseCircle, Sparkles, Sun } from "lucide-react";
 import { Shell } from "@/components/shell";
-import { formatDateGb } from "@/lib/format";
+import { formatDateGb, formatMonthGb, hoursOfWork } from "@/lib/format";
 import { fromHkd, useMoney } from "@/lib/currency";
 import {
+  selectActivityMonths,
   selectKeptTotal,
+  selectMonthRecord,
   selectMonthSpent,
   selectStreak,
   useStillStore,
@@ -68,6 +71,8 @@ function WinsPage() {
         <Mini k="Let go" v={String(letGo)} />
         <Mini k="Rhythm" v={streak ? `${streak}d` : "None"} />
       </div>
+
+      <MonthLog wants={wants} hourlyRate={profile.hourlyRate} joyBudget={profile.funMoneyMonthly} />
 
       <GladRecord misses={misses} />
 
@@ -236,6 +241,111 @@ function Mini({ k, v }: { k: string; v: string }) {
       <p className="text-[11px] uppercase tracking-[0.12em] text-faint">{k}</p>
       <p className="mt-1 font-display text-xl tabular">{v}</p>
     </div>
+  );
+}
+
+function MonthLog({
+  wants,
+  hourlyRate,
+  joyBudget,
+}: {
+  wants: Want[];
+  hourlyRate: number;
+  joyBudget: number;
+}) {
+  const months = useMemo(() => selectActivityMonths(wants), [wants]);
+  const now = new Date();
+  const currentIdx = Math.max(
+    0,
+    months.findIndex((m) => m.year === now.getFullYear() && m.month === now.getMonth()),
+  );
+  const [idx, setIdx] = useState(currentIdx);
+  const safeIdx = Math.min(idx, months.length - 1);
+  const cursor = months[safeIdx] ?? { year: now.getFullYear(), month: now.getMonth() };
+  const rec = selectMonthRecord(wants, cursor.year, cursor.month);
+  const { format } = useMoney();
+  const work = hoursOfWork(rec.keptMoney, hourlyRate);
+  const joyPct =
+    joyBudget > 0 ? Math.min(100, Math.round((rec.spent / joyBudget) * 100)) : rec.spent > 0 ? 100 : 0;
+
+  return (
+    <section className="mt-8">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-display text-xl">By month</h2>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            className="flex size-11 items-center justify-center rounded-[var(--radius-md)] text-ink disabled:text-faint"
+            aria-label="Previous month"
+            disabled={safeIdx <= 0}
+            onClick={() => setIdx((n) => Math.max(0, n - 1))}
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <p className="min-w-[9.5rem] text-center text-sm font-medium text-ink">
+            {formatMonthGb(cursor.year, cursor.month)}
+          </p>
+          <button
+            type="button"
+            className="flex size-11 items-center justify-center rounded-[var(--radius-md)] text-ink disabled:text-faint"
+            aria-label="Next month"
+            disabled={safeIdx >= months.length - 1}
+            onClick={() => setIdx((n) => Math.min(months.length - 1, n + 1))}
+          >
+            <ChevronRight className="size-5" />
+          </button>
+        </div>
+      </div>
+      <p className="mt-1 text-sm text-muted">
+        What stayed, what you still bought on purpose, and the skips that felt good.
+      </p>
+
+      <div className="mt-4 rounded-[var(--radius-xl)] border border-border bg-card px-4 py-4">
+        <p className="text-[11px] uppercase tracking-[0.12em] text-faint">Kept this month</p>
+        <p className="mt-1 font-display text-3xl tabular text-harbour">{format(rec.keptMoney)}</p>
+        {work ? (
+          <p className="mt-1 text-sm text-muted">{work.label} you did not spend.</p>
+        ) : (
+          <p className="mt-1 text-sm text-muted">Nothing kept yet this month.</p>
+        )}
+        <div className="mt-4">
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-sm text-muted">Joy used</p>
+            <p className="text-sm tabular text-ink">
+              {format(rec.spent)}
+              {joyBudget > 0 ? ` of ${format(joyBudget)}` : ""}
+            </p>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-harbour-soft">
+            <div
+              className="h-full rounded-full bg-harbour"
+              style={{ width: `${joyPct}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <Mini k="Pauses" v={String(rec.paused)} />
+        <Mini k="Let go" v={String(rec.letGo)} />
+        <Mini k="Glad skips" v={String(rec.misses)} />
+      </div>
+      {rec.considered > 0 ? (
+        <p className="mt-3 text-sm text-muted">
+          {rec.considered} considered buy{rec.considered === 1 ? "" : "s"} after a pause.
+        </p>
+      ) : null}
+
+      {rec.items.length === 0 ? (
+        <p className="mt-4 text-sm text-muted">Quiet month. The next pause will land here.</p>
+      ) : (
+        <ul className="mt-4 space-y-2">
+          {rec.items.slice(0, 8).map((w) => (
+            <RecentRow key={w.id} want={w} />
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
