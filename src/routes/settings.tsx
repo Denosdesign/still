@@ -4,7 +4,14 @@ import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CurrencySelect } from "@/components/currency-select";
-import { getCurrency, isPreset, normaliseCurrency, sanitiseMoneyInput } from "@/lib/currency";
+import { PayPeriodBar } from "@/components/pay-period";
+import { getCurrency, isPreset, normaliseCurrency, sanitiseMoneyInput, formatMoney } from "@/lib/currency";
+import {
+  fromHourlyRate,
+  roundPay,
+  toHourlyRate,
+  type PayPeriod,
+} from "@/lib/format";
 import { downloadBackup, readBackupFile, restoreBackup } from "@/lib/backup";
 import { useStillStore } from "@/lib/store";
 import { InstallSteps, installExplainer } from "@/components/hold-loop";
@@ -26,7 +33,10 @@ function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(profile.name);
-  const [hourlyRate, setHourlyRate] = useState(String(profile.hourlyRate));
+  const [period, setPeriod] = useState<PayPeriod>(profile.payPeriod || "hour");
+  const [payRaw, setPayRaw] = useState(
+    String(fromHourlyRate(profile.hourlyRate, profile.payPeriod || "hour") || profile.hourlyRate),
+  );
   const [fun, setFun] = useState(String(profile.funMoneyMonthly));
   const [goalName, setGoalName] = useState(profile.goalName);
   const [currency, setCurrency] = useState(profile.currency || "HKD");
@@ -34,6 +44,14 @@ function SettingsPage() {
     profile.customCurrencies ?? [],
   );
   const money = getCurrency(currency);
+  const payAmount = Number.parseFloat(payRaw.replace(/,/g, "")) || 0;
+  const hourly = roundPay(toHourlyRate(payAmount, period));
+
+  function setPeriodAndKeep(next: PayPeriod) {
+    if (next === period) return;
+    if (hourly >= 1) setPayRaw(String(fromHourlyRate(hourly, next)));
+    setPeriod(next);
+  }
   const standalone = useStandalone();
   const platform = installPlatform();
   const install = installExplainer();
@@ -50,7 +68,8 @@ function SettingsPage() {
   function save() {
     updateProfile({
       name: name.replace(/\s+/g, " ").trim().slice(0, 20),
-      hourlyRate: Math.max(1, Number(hourlyRate) || 150),
+      hourlyRate: Math.max(1, hourly || 150),
+      payPeriod: period,
       funMoneyMonthly: Math.max(0, Number(fun) || 0),
       goalName: goalName.trim() || "A quieter year",
       currency,
@@ -107,7 +126,7 @@ function SettingsPage() {
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">You</p>
         <h1 className="mt-1 font-display text-3xl">Your numbers</h1>
         <p className="mt-2 text-sm text-muted">
-          Used only on this device. Hourly rate turns prices into hours of your life.
+          Used only on this device. Pay turns prices into hours of your life.
         </p>
       </header>
 
@@ -129,12 +148,22 @@ function SettingsPage() {
             onAdd={addCustom}
           />
         </Field>
-        <Field label={`Hourly rate (${money.symbol.trim() || money.code})`}>
+        <Field label={`Pay (${money.symbol.trim() || money.code})`}>
+          <PayPeriodBar value={period} onChange={setPeriodAndKeep} />
           <Input
+            className="mt-3"
             inputMode="decimal"
-            value={hourlyRate}
-            onChange={(e) => setHourlyRate(sanitiseMoneyInput(e.target.value, money.fraction))}
+            value={payRaw}
+            onChange={(e) => setPayRaw(sanitiseMoneyInput(e.target.value, money.fraction))}
           />
+          {period !== "hour" && hourly >= 1 ? (
+            <p className="mt-2 text-xs text-muted">
+              That is about {formatMoney(hourly, currency)} an hour
+              {period === "month"
+                ? ", assuming 8-hour days, 22 days a month."
+                : ", assuming 8-hour days across the year."}
+            </p>
+          ) : null}
         </Field>
         <Field label={`Monthly joy money (${money.symbol.trim() || money.code})`}>
           <Input
