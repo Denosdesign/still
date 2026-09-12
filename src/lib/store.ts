@@ -251,6 +251,11 @@ export const useStillStore = create<StillState>()(
             ...DEFAULT_PROFILE,
             ...(p.profile ?? current.profile),
             rateSet: Boolean((p.profile ?? current.profile)?.rateSet),
+            payPeriod:
+              (p.profile ?? current.profile)?.payPeriod === "month" ||
+              (p.profile ?? current.profile)?.payPeriod === "year"
+                ? (p.profile ?? current.profile)?.payPeriod
+                : "hour",
             currency: (p.profile ?? current.profile)?.currency || "HKD",
             customCurrencies: Array.isArray((p.profile ?? current.profile)?.customCurrencies)
               ? ((p.profile ?? current.profile)?.customCurrencies as string[])
@@ -284,16 +289,59 @@ function realWants(wants: Want[]) {
   );
 }
 
+export function isInMonth(ts: number, year: number, month: number) {
+  const d = new Date(ts);
+  return d.getFullYear() === year && d.getMonth() === month;
+}
+
+export function selectActivityMonths(wants: Want[], now = new Date()) {
+  const map = new Map<string, { year: number; month: number }>();
+  const add = (ts: number) => {
+    const d = new Date(ts);
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    map.set(`${year}-${month}`, { year, month });
+  };
+  add(now.getTime());
+  for (const w of realWants(wants)) {
+    add(w.createdAt);
+    if (w.decidedAt) add(w.decidedAt);
+  }
+  return [...map.values()].sort((a, b) => a.year - b.year || a.month - b.month);
+}
+
+export function selectMonthRecord(wants: Want[], year: number, month: number) {
+  const real = realWants(wants);
+  const paused = real.filter((w) => !w.nearMiss && isInMonth(w.createdAt, year, month));
+  const kept = real.filter(
+    (w) =>
+      (w.status === "kept" || w.status === "walked") &&
+      isInMonth(w.decidedAt ?? w.createdAt, year, month),
+  );
+  const bought = real.filter(
+    (w) => w.status === "bought" && w.decidedAt && isInMonth(w.decidedAt, year, month),
+  );
+  const misses = real.filter((w) => w.nearMiss && isInMonth(w.createdAt, year, month));
+  const items = real
+    .filter(
+      (w) =>
+        isInMonth(w.createdAt, year, month) ||
+        (w.decidedAt != null && isInMonth(w.decidedAt, year, month)),
+    )
+    .sort((a, b) => (b.decidedAt ?? b.createdAt) - (a.decidedAt ?? a.createdAt));
+  return {
+    paused: paused.length,
+    letGo: kept.length,
+    considered: bought.length,
+    misses: misses.length,
+    keptMoney: kept.reduce((sum, w) => sum + w.priceHkd, 0),
+    spent: bought.reduce((sum, w) => sum + w.priceHkd, 0),
+    items,
+  };
+}
+
 export function selectMonthSpent(wants: Want[], now = new Date()) {
-  const y = now.getFullYear();
-  const m = now.getMonth();
-  return realWants(wants)
-    .filter((w) => w.status === "bought" && w.decidedAt)
-    .filter((w) => {
-      const d = new Date(w.decidedAt as number);
-      return d.getFullYear() === y && d.getMonth() === m;
-    })
-    .reduce((sum, w) => sum + w.priceHkd, 0);
+  return selectMonthRecord(wants, now.getFullYear(), now.getMonth()).spent;
 }
 
 export function selectKeptTotal(wants: Want[]) {
