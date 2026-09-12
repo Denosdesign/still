@@ -63,6 +63,10 @@ function pickData(raw: unknown): StillBackup["data"] | null {
       ...(profileIn as Partial<Profile>),
       name: typeof profileIn.name === "string" ? profileIn.name.slice(0, 20) : "",
       hourlyRate: Number(profileIn.hourlyRate) || DEFAULT_PROFILE.hourlyRate,
+      payPeriod:
+        profileIn.payPeriod === "month" || profileIn.payPeriod === "year" || profileIn.payPeriod === "hour"
+          ? profileIn.payPeriod
+          : DEFAULT_PROFILE.payPeriod,
       funMoneyMonthly: Number(profileIn.funMoneyMonthly) || 0,
       goalName:
         typeof profileIn.goalName === "string" && profileIn.goalName.trim()
