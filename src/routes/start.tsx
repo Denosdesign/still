@@ -19,15 +19,10 @@ import {
   sanitiseMoneyInput,
 } from "@/lib/currency";
 import { CurrencySelect } from "@/components/currency-select";
+import { PayPeriodBar } from "@/components/pay-period";
 import { useStillStore } from "@/lib/store";
 
 export const Route = createFileRoute("/start")({ component: StartPage });
-
-const PERIODS: { id: PayPeriod; label: string }[] = [
-  { id: "hour", label: "Hour" },
-  { id: "month", label: "Month" },
-  { id: "year", label: "Year" },
-];
 
 const NAME_MAX = 20;
 
@@ -43,9 +38,11 @@ function StartPage() {
   const profile = useStillStore((s) => s.profile);
   const updateProfile = useStillStore((s) => s.updateProfile);
   const [step, setStep] = useState<0 | 1 | 2>(0);
-  const [period, setPeriod] = useState<PayPeriod>("hour");
+  const [period, setPeriod] = useState<PayPeriod>(profile.payPeriod || "hour");
   const [raw, setRaw] = useState(
-    profile.rateSet ? String(profile.hourlyRate) : "",
+    profile.rateSet
+      ? String(fromHourlyRate(profile.hourlyRate, profile.payPeriod || "hour") || profile.hourlyRate)
+      : "",
   );
   const [joy, setJoy] = useState(
     profile.setupDone ? profile.funMoneyMonthly : getCurrency(profile.currency || "HKD").joyDefault,
@@ -103,6 +100,7 @@ function StartPage() {
       currency,
       customCurrencies,
       hourlyRate: Math.max(1, hourly || money.skipHourly || profile.hourlyRate || 1),
+      payPeriod: period,
       funMoneyMonthly: Math.max(0, joy),
       goalName: resolvedGoal,
       rateSet: true,
@@ -309,20 +307,8 @@ function PayStep({
         <p className="text-sm text-muted">
           Rough is better than blank. {money.known ? "Pick a starting point, or type your own." : "Type your own numbers."}
         </p>
-        <div className="mt-5 grid grid-cols-3 gap-1.5 rounded-full bg-harbour-soft/80 p-1">
-          {PERIODS.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => onPeriod(p.id)}
-              className={cn(
-                "h-10 rounded-full text-sm font-medium",
-                period === p.id ? "bg-harbour text-harbour-fg" : "text-harbour",
-              )}
-            >
-              {p.label}
-            </button>
-          ))}
+        <div className="mt-5">
+          <PayPeriodBar value={period} onChange={onPeriod} />
         </div>
         <p className="mt-5 text-xs font-medium uppercase tracking-[0.12em] text-faint">
           Per {period}
