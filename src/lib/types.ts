@@ -91,6 +91,7 @@ export type CheckIn = {
 export type Profile = {
   name: string;
   hourlyRate: number;
+  payPeriod: "hour" | "month" | "year";
   funMoneyMonthly: number;
   goalName: string;
   goalTarget: number;
@@ -107,6 +108,7 @@ export type Profile = {
 export const DEFAULT_PROFILE: Profile = {
   name: "",
   hourlyRate: 150,
+  payPeriod: "hour",
   funMoneyMonthly: 2500,
   goalName: "A quieter year",
   goalTarget: 20000,
