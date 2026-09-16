@@ -86,6 +86,8 @@ function pickData(raw: unknown): StillBackup["data"] | null {
         typeof profileIn.installPromptWantId === "string"
           ? profileIn.installPromptWantId
           : "",
+      rideTheWave: Boolean(profileIn.rideTheWave),
+      alreadyHave: Boolean(profileIn.alreadyHave),
     },
     wants: asArray(source.wants, isWant).filter((w) => !w.sample),
     checkIns: asArray(source.checkIns, isCheckIn),
