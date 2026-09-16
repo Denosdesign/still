@@ -103,6 +103,8 @@ export type Profile = {
   installPromptSeen: boolean;
   installSnoozeCount: number;
   installPromptWantId: string;
+  rideTheWave: boolean;
+  alreadyHave: boolean;
 };
 
 export const DEFAULT_PROFILE: Profile = {
@@ -120,6 +122,8 @@ export const DEFAULT_PROFILE: Profile = {
   installPromptSeen: false,
   installSnoozeCount: 0,
   installPromptWantId: "",
+  rideTheWave: false,
+  alreadyHave: false,
 };
 
 export const EMPTY_HALT: HaltState = {
