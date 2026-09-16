@@ -5,7 +5,6 @@ import {
   Check,
   Clock,
   Coffee,
-  Heart,
   Moon,
   Users,
   Zap,
@@ -48,7 +47,14 @@ import { CalendarRemind } from "@/components/hold-loop";
 
 type Step = "capture" | "halt" | "surf" | "see" | "gratitude" | "decide" | "done";
 
-const STEPS: Step[] = ["capture", "halt", "surf", "see", "gratitude", "decide"];
+function pauseSteps(surf: boolean, alreadyHave: boolean): Step[] {
+  const steps: Step[] = ["capture", "halt"];
+  if (surf) steps.push("surf");
+  steps.push("see");
+  if (alreadyHave) steps.push("gratitude");
+  steps.push("decide");
+  return steps;
+}
 
 function sampleDraft(code: string) {
   return {
@@ -93,6 +99,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   });
   const [gratitude, setGratitude] = useState(["", "", ""]);
   const [waitHours, setWaitHours] = useState(24);
+  const steps = pauseSteps(profile.rideTheWave, profile.alreadyHave);
   const [outcome, setOutcome] = useState<WantStatus>("waiting");
   const [praise, setPraise] = useState("");
   const [committed, setCommitted] = useState({
@@ -132,7 +139,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
   }
 
   function back() {
-    const i = STEPS.indexOf(step as (typeof STEPS)[number]);
+    const i = steps.indexOf(step as (typeof steps)[number]);
     if (step === "done") {
       goHome();
       return;
@@ -141,7 +148,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
       goHome();
       return;
     }
-    setStep(STEPS[i - 1] as Step);
+    setStep(steps[i - 1] as Step);
   }
 
   function goHome() {
@@ -189,7 +196,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
     }
   }
 
-  const stepIndex = Math.max(0, STEPS.indexOf(step as (typeof STEPS)[number]));
+  const stepIndex = Math.max(0, steps.indexOf(step as (typeof steps)[number]));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -214,7 +221,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
 
       {step !== "done" && (
         <div className="mb-4 flex shrink-0 gap-1.5">
-          {STEPS.map((s, i) => (
+          {steps.map((s, i) => (
             <span
               key={s}
               className={cn(
@@ -240,7 +247,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
         <HaltStep
           halt={halt}
           setHalt={setHalt}
-          onNext={() => go("surf")}
+          onNext={() => go(profile.rideTheWave ? "surf" : "see")}
         />
       )}
       {step === "surf" && (
@@ -260,7 +267,7 @@ export function PauseFlow({ sample = false }: { sample?: boolean }) {
           }
           ten={ten}
           setTen={setTen}
-          onNext={() => go("gratitude")}
+          onNext={() => go(profile.alreadyHave ? "gratitude" : "decide")}
         />
       )}
       {step === "gratitude" && (
@@ -754,6 +761,7 @@ function DecideStep({
   onBuy: () => void;
 }) {
   const { format } = useMoney();
+  const [confirmLetGo, setConfirmLetGo] = useState(false);
   return (
     <div className="flex flex-1 flex-col gap-3">
       <p className="text-sm text-muted">
@@ -779,17 +787,33 @@ function DecideStep({
           </Chip>
         ))}
       </div>
-      <button
-        type="button"
-        onClick={onKeep}
-        className="rounded-[var(--radius-xl)] border border-border bg-card p-5 text-left transition-transform active:scale-[0.98]"
-      >
-        <Heart className="size-5 text-harbour" />
-        <p className="mt-3 font-display text-xl text-ink">Let it go</p>
-        <p className="mt-1 text-sm text-muted">
-          Keep {format(price)}. The want can leave without the money.
-        </p>
-      </button>
+      {confirmLetGo ? (
+        <div className="rounded-[var(--radius-xl)] border border-border bg-card p-5">
+          <p className="font-display text-xl text-ink">Keep the money?</p>
+          <p className="mt-1 text-sm text-muted">
+            This closes the want. It does not go on a wait.
+          </p>
+          <Button size="lg" className="mt-4 w-full" onClick={onKeep}>
+            Yes, keep it
+          </Button>
+          <Button
+            variant="ghost"
+            size="lg"
+            className="mt-2 w-full"
+            onClick={() => setConfirmLetGo(false)}
+          >
+            Not that
+          </Button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setConfirmLetGo(true)}
+          className="rounded-[var(--radius-lg)] px-2 py-3 text-left text-sm text-muted"
+        >
+          Let it go. Keep {format(price)}
+        </button>
+      )}
       <button
         type="button"
         onClick={onBuy}
