@@ -5,6 +5,7 @@ import {
   Check,
   Clock,
   Coffee,
+  Heart,
   Moon,
   Users,
   Zap,
@@ -789,29 +790,33 @@ function DecideStep({
       </div>
       {confirmLetGo ? (
         <div className="rounded-[var(--radius-xl)] border border-border bg-card p-5">
-          <p className="font-display text-xl text-ink">Keep the money?</p>
+          <Heart className="size-5 text-harbour" />
+          <p className="mt-3 font-display text-xl text-ink">Keep the money?</p>
           <p className="mt-1 text-sm text-muted">
             This closes the want. It does not go on a wait.
           </p>
           <Button size="lg" className="mt-4 w-full" onClick={onKeep}>
             Yes, keep it
           </Button>
-          <Button
-            variant="ghost"
-            size="lg"
-            className="mt-2 w-full"
+          <button
+            type="button"
+            className="mt-1 w-full py-2 text-sm text-muted"
             onClick={() => setConfirmLetGo(false)}
           >
             Not that
-          </Button>
+          </button>
         </div>
       ) : (
         <button
           type="button"
           onClick={() => setConfirmLetGo(true)}
-          className="rounded-[var(--radius-lg)] px-2 py-3 text-left text-sm text-muted"
+          className="rounded-[var(--radius-xl)] border border-border bg-card p-5 text-left transition-transform active:scale-[0.98]"
         >
-          Let it go. Keep {format(price)}
+          <Heart className="size-5 text-harbour" />
+          <p className="mt-3 font-display text-xl text-ink">Let it go</p>
+          <p className="mt-1 text-sm text-muted">
+            Keep {format(price)}. The want can leave without the money.
+          </p>
         </button>
       )}
       <button
