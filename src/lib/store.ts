@@ -267,6 +267,8 @@ export const useStillStore = create<StillState>()(
               Number((p.profile ?? current.profile)?.installSnoozeCount) || 0,
             installPromptWantId:
               String((p.profile ?? current.profile)?.installPromptWantId ?? ""),
+            rideTheWave: Boolean((p.profile ?? current.profile)?.rideTheWave),
+            alreadyHave: Boolean((p.profile ?? current.profile)?.alreadyHave),
           },
           customCategories: p.customCategories ?? [],
           customSources: p.customSources ?? [],
