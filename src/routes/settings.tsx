@@ -16,6 +16,7 @@ import { downloadBackup, readBackupFile, restoreBackup } from "@/lib/backup";
 import { useStillStore } from "@/lib/store";
 import { InstallSteps, installExplainer } from "@/components/hold-loop";
 import { installPlatform, useStandalone } from "@/lib/install";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
@@ -191,10 +192,31 @@ function SettingsPage() {
       </div>
 
       <section className="mt-10">
+        <h2 className="font-display text-xl">During a pause</h2>
+        <p className="mt-1 text-sm text-muted">
+          Off until you turn them on. Naming the want and holding it still works without them.
+        </p>
+        <div className="mt-4 space-y-2">
+          <ExtraToggle
+            title="Ride the wave"
+            body="Ninety seconds watching the urge peak and fall, before you decide."
+            on={profile.rideTheWave}
+            onChange={(on) => updateProfile({ rideTheWave: on })}
+          />
+          <ExtraToggle
+            title="What you already have"
+            body="Name three things you already like owning, before you decide."
+            on={profile.alreadyHave}
+            onChange={(on) => updateProfile({ alreadyHave: on })}
+          />
+        </div>
+      </section>
+
+      <section className="mt-10">
         <h2 className="font-display text-xl">How to use Still</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted">
           <li>When a want hits, open Still before the shop.</li>
-          <li>Name the thing and the price. Ride the ninety-second wave. Then hold it, let it go, or buy with a clear head.</li>
+          <li>Name the thing and the price. Then hold it, let it go, or buy with a clear head.</li>
           <li>If you hold, review it only when the timer is done. What was true at pause is the evidence.</li>
           <li>If you already walked away, tap Glad I didn’t. Name it, what you didn’t spend, and how it felt, while the relief is warm.</li>
         </ol>
@@ -296,6 +318,46 @@ function SettingsPage() {
         )}
       </section>
     </Shell>
+  );
+}
+
+function ExtraToggle({
+  title,
+  body,
+  on,
+  onChange,
+}: {
+  title: string;
+  body: string;
+  on: boolean;
+  onChange: (on: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={() => onChange(!on)}
+      className="flex w-full items-start gap-3 rounded-[var(--radius-lg)] border border-border bg-card px-4 py-3 text-left"
+    >
+      <div className="min-w-0 flex-1">
+        <p className="font-medium text-ink">{title}</p>
+        <p className="mt-1 text-sm text-muted">{body}</p>
+      </div>
+      <span
+        className={cn(
+          "mt-1 flex h-7 w-11 shrink-0 items-center rounded-full p-0.5",
+          on ? "bg-harbour" : "bg-border",
+        )}
+      >
+        <span
+          className={cn(
+            "block size-6 rounded-full bg-card shadow-sm transition-transform duration-[var(--motion-fast)]",
+            on ? "translate-x-4" : "translate-x-0",
+          )}
+        />
+      </span>
+    </button>
   );
 }
 
